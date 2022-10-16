@@ -1,20 +1,16 @@
 Primeiro monstro com a ideia de ser algo facil de se invocar e tendo facilidade em dar um dano razoavel, consideirando que o HP dos players é 100
 
-Monstro - LV1
-Ricardo, o Cavalo
+Esse monstro vai ter a classificação do nivel mais baixo, ainda não foi decidido exatamente qual será, provavelmente será "Base", quero evitar usar "LV"
+O seu unico efeito é poder atacar no turno que é invocado, nesse jogo pensei em fazer como magic, lá tem a "summoning sickness", aqui tem só o attack sickness.
+
+
+
+
+Monstro - LV1              |Monster - Base
+Ricardo, o Cavalo          |Ricardo, the Horse/Richard, the Horse
 Animal
-Ataque 15
-Vida 5
+Ataque 15                  |Atk 15
+Vida 5                     |Life 5
 
-Porradeiro - "Pode atacar no turno que é invocado"
-
-
-Monster Animal 
-Richard, The Horse
-
-Effect: Attacker
-"Attacker Monsters can attack the turn they are summoned."
-
-15 Attack
-5 Life
-
+Porradeiro - "Pode atacar no turno que é invocado."
+Attacker - "Can attack in the same turn it's summoned."

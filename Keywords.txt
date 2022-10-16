@@ -1,9 +1,12 @@
-Blocker - "must block or be blocked"
+Como magic, teremos varias keywords, o objetivo é diminuir o texto de cards que repetem os mesmos exatos efeitos.
 
-if there are multiple blockers, the attacker can choose the targets
+Blocker - "must block or be blocked."
+if there are multiple blockers, the attacking player can choose the targets
 
-Attacker - "Can attack the turn its summoned"
+Attacker - "Can attack in the same turn it's summoned."
 
-Equip "Equips itself to a monster, when the monster is destroyed its sent to the GY"
+Equip - "Equips itself to a monster, when the monster is removed from the field it sends itself to the GY"
 
-GY " Graveyard, all cards get destroyed, tributed, discarted or milled from deck are sent there"
+GY - " 'Graveyard', all cards get destroyed, tributed, discarted or milled from deck are sent there"
+
+Mill - "Send from top of the deck to the GY"
