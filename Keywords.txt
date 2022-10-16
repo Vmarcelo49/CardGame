@@ -1,0 +1,9 @@
+Blocker - "must block or be blocked"
+
+if there are multiple blockers, the attacker can choose the targets
+
+Attacker - "Can attack the turn its summoned"
+
+Equip "Equips itself to a monster, when the monster is destroyed its sent to the GY"
+
+GY " Graveyard, all cards get destroyed, tributed, discarted or milled from deck are sent there"

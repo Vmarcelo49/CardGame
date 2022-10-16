@@ -1,0 +1,58 @@
+############################
+Tapinha
+Spell
+Inflinja 5 a qualquer coisa
+
+############################
+
+Totem of something
+spell
+continuous
+
+pay x life(max.50) where x is the life of totem of something
+
+Other creatures you control gain their life as attack
+
+
+#############################
+
+Canalized cannon
+monster
+Attack 2
+life 10
+During each main phase, double this card attack
+
+##############################
+spell
+quick 
+
+if a card would take damage in your side of the field, you can inflict the damage to your LP instead
+
+##############################
+monstro com ataque alto precisa de algum custo
+monstro
+attack 30
+
+
+#############################
+ultimate comback???
+
+Target (X - 1) number of creatures in your GY.(where X is the number of turns that have passed)
+summon them
+
+############################
+NICE
+activate only if you or your opponent has 69 LP
+
+
+###########################
+Sacrificial Lamb
+Animal
+attack 0
+
+life X (pay life to summon, max 15 life)
+
+If anything would take damage in your side of the field, you can redirect all damage to this card instead.
+
+#############################
+carta sobre button presses e parallel universes

@@ -1,0 +1,28 @@
+######### Cardgame sem nome ########
+- Cartas não tem custo de mana ou afins
+- Numero ilimitado de monstros ou outros cards no campo
+- hand size limit provavelmente não
+- Contem monstros
+- quick play spells
+- spells continuos
+- vida do jogador é 100
+- combos normalmente funcionam com 3 cards ou mais
+- o objetivo é poder ter muita liberdade com efeitos
+- todos os monstros tem attack sickness
+
+Primeiro set de cartas TEM que ter 125 cartas
+
+base do jogo vão ser os monstros, crie primeiro a base de tudo, turnos e como invocar monstros.
+
+
+
+Turnos consistem em:
+
+1 - Fase de Compra
+2 - Fase Principal
+4 - Fase de Ataque
+3 - Fase Final
+
+Mãos iniciais tem 6 cartas e você tem a opção de mulligan uma vez
+retornando sua mão de 6 pro deck e entao tendo uma nova mão de 5
+

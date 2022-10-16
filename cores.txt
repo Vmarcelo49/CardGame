@@ -1,0 +1,7 @@
+monstros
+Vermelho
+
+spells
+Azul
+Amarelo
+Verde

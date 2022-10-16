@@ -1,0 +1,21 @@
+Exemplo de um duelo sem nenhuma carta elaborada ainda:
+
+Ambos os jogadores fazem seus decks com minimo de 45 e maximo de 65 cards (somente pra não ficar igual á yugioh)
+
+Jogadores tem sua mão inicial de 6 cards
+
+eles decidem se fazem ou não o mulligan
+
+jogam a moeda para ver quem vai primeiro
+
+jogador que for primeiro começa a partida na Fase Principal
+
+ele pode invocar monstros fracos em ataque sem muita dificuldade da sua mão, os efeitos variam entre enviar cards do deck, comprar cards ou outras coisas variadas
+
+ele usa tambem spells continuos como floodgates ou qualquer outro efeitos
+
+existe cemiterio
+
+ele passa depois de colocar alguns cards em campo
+
+segundo jogador compra e segue pra fase Principal e faz o mesmo que jogador 1, enquanto destroi os monstros do jogador 2

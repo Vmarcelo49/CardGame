@@ -1,0 +1,20 @@
+Primeiro monstro com a ideia de ser algo facil de se invocar e tendo facilidade em dar um dano razoavel, consideirando que o HP dos players é 100
+
+Monstro - LV1
+Ricardo, o Cavalo
+Animal
+Ataque 15
+Vida 5
+
+Porradeiro - "Pode atacar no turno que é invocado"
+
+
+Monster Animal 
+Richard, The Horse
+
+Effect: Attacker
+"Attacker Monsters can attack the turn they are summoned."
+
+15 Attack
+5 Life
+
