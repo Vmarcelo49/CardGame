@@ -1,0 +1,4 @@
+Resolução da carta inteira é de 700x1000 Aspect ratio: 0.7:1
+Resolução da arte da carta é 700x500 Aspect Ratio: 7:5
+
+Unispace é a fonte placeholder pra tanto texto como efeito
