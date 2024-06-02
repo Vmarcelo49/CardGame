@@ -47,6 +47,8 @@ type Card struct {
 	Text    string   `yaml:"Text"`
 	Effects []Effect `yaml:"Effects"`
 	Stats   Stats    `yaml:"Stats"` //can be nil
+	// Card effect related
+	Keywords []Keyword
 	// more gerenal stuff
 	X, Y           int
 	W, H           int

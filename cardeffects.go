@@ -33,28 +33,28 @@ func (f *Funcs) AddFuncByName(name string) error {
 	return errors.New(fmt.Sprint("Function ", name, " not found"))
 }
 
-type CreatureKeyword uint8
+type Keyword uint8
 
 const (
-	None CreatureKeyword = iota
+	None Keyword = iota
 	Attacker
 	Piercer
 	Blocker
 )
 
-func giveCreatureKeyword(key CreatureKeyword, target *Card) {
+func giveKeyword(key Keyword, target *Card) {
 	// Doesnt start a Chain
-	if target.Type != Creature {
+	if target.CType != Creature {
 		fmt.Println("Card is not a creature")
 		return
 	}
 	switch key {
 	case Attacker:
-		target.Keywords = append(target.Keywords, "Attacker")
+		target.Keywords = append(target.Keywords, Attacker)
 	case Piercer:
-		target.Keywords = append(target.Keywords, "Piercer")
+		target.Keywords = append(target.Keywords, Piercer)
 	case Blocker:
-		target.Keywords = append(target.Keywords, "Blocker")
+		target.Keywords = append(target.Keywords, Blocker)
 	}
 
 }
