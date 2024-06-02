@@ -1,0 +1,10 @@
+Name: Tapinha
+ID: 2
+Type: 1 # 0 = Creature, 1 = Spell, 2 = Permanent ...
+Subtype: Fast
+cardText: Cause 5 de dano a qualquer coisa.
+
+effects:
+  type: effectDamage
+  amount: 5
+  target: any

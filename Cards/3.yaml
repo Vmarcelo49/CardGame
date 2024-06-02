@@ -1,0 +1,14 @@
+Name: Totem da drenagem vital
+ID: 3
+Type: 1 # 0 = Creature, 1 = Spell, 2 = Permanent ...
+Subtype: Permanent
+cardText: Tome 15 de dano cada começo de turno. Criaturas que você controla ganham ataque igual a vida da própria criatura.
+
+effects:
+  - type: effectDamage
+    amount: 15
+    target: player
+
+  - type: attackModifier
+    amount: 0
+    target: playerCreatures

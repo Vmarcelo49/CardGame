@@ -1,0 +1,20 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "go",
+			"label": "go: build package",
+			"command": "build",
+			"args": [
+				"-ldflags",
+				"-s -w -H=windowsgui",
+				"${fileDirname}"
+			],
+			"problemMatcher": [
+				"$go"
+			],
+			"group": "build",
+			"detail": "cd c:\\Users\\vmarc\\Área de Trabalho\\Programacao\\GoGame; go build -ldflags \"-s -w -H=windowsgui\" ${fileDirname}"
+		}
+	]
+}
