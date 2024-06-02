@@ -14,7 +14,7 @@
 				"$go"
 			],
 			"group": "build",
-			"detail": "cd c:\\Users\\vmarc\\Área de Trabalho\\Programacao\\GoGame; go build -ldflags \"-s -w -H=windowsgui\" ${fileDirname}"
+			"detail": "cd c:\\Users\\vmarc\\Área de Trabalho\\CardGame\\GoGame; go build -ldflags \"-s -w -H=windowsgui\" ${fileDirname}"
 		}
 	]
 }
