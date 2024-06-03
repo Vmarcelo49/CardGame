@@ -114,8 +114,8 @@ func createCard(card *Card, cardFrameIm *ebiten.Image, pathCardArt string) *Card
 	}
 
 	textOp := &text.DrawOptions{}
-	op.GeoM.Translate(border, border)
-	op.ColorScale.ScaleWithColor(color.White)
+	textOp.GeoM.Translate(border, border)
+	textOp.ColorScale.ScaleWithColor(color.White)
 
 	text.Draw(card.Image, card.Name, &text.GoTextFace{
 		Source: font,

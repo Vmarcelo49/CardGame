@@ -30,13 +30,16 @@ const (
 type Scene uint8
 
 type Game struct {
-	mouse       *Mouse
-	hand        *Hand
-	deck        *Deck
-	field       *Field
-	turnCount   int
-	scene       Scene
-	HUDMainMenu *HUDMainMenu
+	//Main Menu
+	scene           Scene
+	mainMenuButtons []*Button
+	//Duel
+	mouse     *Mouse
+	hand      *Hand
+	deck      *Deck
+	field     *Field
+	turnCount int
+	//RockPaperScissors
 }
 
 func init() {
@@ -145,8 +148,10 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	case Duel:
 		g.DrawDuel(screen)
 	case MainMenu:
+		g.DrawMainMenu(screen)
 		//menu logic
 	case RockPaperScissors:
+		fmt.Println("RockPaperScissors")
 		//rock paper scissors logic
 	}
 

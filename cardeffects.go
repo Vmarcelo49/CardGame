@@ -6,7 +6,7 @@ import (
 )
 
 var funcMap = map[string]func() error{
-	"giveCreatureKeyword": giveCreatureKeyword,
+	"giveKeyword": giveKeyword,
 }
 
 type Funcs struct {

@@ -1,8 +1,11 @@
 package main
 
 import (
+	"image/color"
+
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	"github.com/hajimehoshi/ebiten/v2/text/v2"
 )
 
 type HUDDuel struct {
@@ -11,31 +14,53 @@ type HUDDuel struct {
 }
 
 type Button struct {
-	x, y, width, height int
-	image               *ebiten.Image
-	text                string
-	function            func()
+	x, y     int
+	image    *ebiten.Image
+	function func()
 }
 
-func (b *Button) in(x, y int) bool {
-	return x > b.x && x < b.x+b.width && y > b.y && y < b.y+b.height
+func newButton(x, y int, texto string, function func()) *Button {
+	newImage := ebiten.NewImage(screenWidth/8, screenHeight/8)
+	newImage.Fill(color.White)
+
+	// draw text on the image
+	textOp := &text.DrawOptions{}
+	textOp.GeoM.Translate(10, 10)
+	textOp.ColorScale.ScaleWithColor(color.Black)
+
+	text.Draw(newImage, texto, &text.GoTextFace{
+		Source: font,
+		Size:   fontSize,
+	}, textOp)
+
+	return &Button{x, y, newImage, function}
 }
 
-func createButtonSlice() []*Button {
-	var buttonSlice []*Button
-	for i := 0; i < 4; i++ {
-		buttonSlice = append(buttonSlice, &Button{x: screenWidth/2 - 100, y: screenHeight/2 + 50*i, width: 200, height: 50, text: "Button " + string(i)})
+func (b *Button) checkClicked(m *Mouse) {
+	if m.X > b.x && m.X < b.x+b.image.Bounds().Dy() && m.Y > b.y && m.Y < b.y+b.image.Bounds().Dx() && m.LeftPressed == true {
+		b.function()
+		return
 	}
+	return
+}
+
+func (b *Button) draw(screen *ebiten.Image) {
+	op := &ebiten.DrawImageOptions{}
+	op.GeoM.Translate(float64(b.x), float64(b.y))
+	screen.DrawImage(b.image, op)
+}
+
+func addButton(buttonSlice []*Button, image *ebiten.Image, text string, function func()) []*Button {
+	x := (screenWidth - image.Bounds().Dx()) / 2
+	y := (screenHeight-image.Bounds().Dy())/2 + len(buttonSlice)*(image.Bounds().Dy()+10)
+	buttonSlice = append(buttonSlice, newButton(x, y, text, function))
 	return buttonSlice
 }
 
-type HUDMainMenu struct {
-	button []*Button
-}
-
-func (g *Game) drawMainMenu(screen *ebiten.Image) {
+func (g *Game) DrawMainMenu(screen *ebiten.Image) {
+	screen.Fill(backgroundColor)
 	ebitenutil.DebugPrint(screen, "Main Menu")
-	for _, b := range g.hudMainMenu.button {
-
+	for _, b := range g.mainMenuButtons {
+		b.draw(screen)
 	}
 }
