@@ -1,68 +1,46 @@
 package main
 
 import (
-	"bytes"
-	"image"
-	_ "image/jpeg"
-	"log"
-
-	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/examples/resources/images"
+	"errors"
+	"fmt"
 )
 
-const (
-	screenWidth  = 640
-	screenHeight = 480
-)
+type Effect struct {
+	functions []func(args ...interface{}) error
+	args      []interface{}
+	text      string
+}
 
-var (
-	gophersImage *ebiten.Image
-)
+func newEffect(text string, fun func(args ...interface{}) error, args ...interface{}) Effect {
+	return Effect{
+		functions: []func(args ...interface{}) error{fun},
+		args:      args,
+		text:      text}
+}
 
-type Game struct{}
+type Card struct {
+	x, y int
+	eff  Effect
+}
 
-func (g *Game) Update() error {
+func (c *Card) run() error {
+	return c.eff.functions[0](c.eff.args...)
+}
+
+func say(args ...interface{}) error {
+	if len(args) == 0 {
+		return errors.New("no arguments provided")
+	}
+	for _, myvalue := range args {
+		fmt.Println(myvalue)
+	}
 	return nil
 }
 
-func (g *Game) Draw(screen *ebiten.Image) {
-	// Split the image into horizontal lines and draw them with different scales.
-	op := &ebiten.DrawImageOptions{}
-	w, h := gophersImage.Bounds().Dx(), gophersImage.Bounds().Dy()
-	for i := 0; i < h; i++ {
-		op.GeoM.Reset()
-
-		// Move the image's center to the upper-left corner.
-		op.GeoM.Translate(-float64(w)/2, -float64(h)/2)
-
-		// Scale each lines and adjust the position.
-		lineW := w + i*3/4
-		x := -float64(lineW) / float64(w) / 2
-		op.GeoM.Scale(float64(lineW)/float64(w), 1)
-		op.GeoM.Translate(x, float64(i))
-
-		// Move the image's center to the screen's center.
-		op.GeoM.Translate(screenWidth/2, screenHeight/2)
-
-		screen.DrawImage(gophersImage.SubImage(image.Rect(0, i, w, i+1)).(*ebiten.Image), op)
-	}
-}
-
-func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
-	return screenWidth, screenHeight
-}
-
 func main() {
-	// Decode an image from the image file's byte slice.
-	img, _, err := image.Decode(bytes.NewReader(images.Gophers_jpg))
-	if err != nil {
-		log.Fatal(err)
-	}
-	gophersImage = ebiten.NewImageFromImage(img)
-
-	ebiten.SetWindowSize(screenWidth, screenHeight)
-	ebiten.SetWindowTitle("Perspective (Ebitengine Demo)")
-	if err := ebiten.RunGame(&Game{}); err != nil {
-		log.Fatal(err)
-	}
+	effect := newEffect("Prints stuff", say, "Hello", "World", 10, 1)
+	myCard := &Card{10, 10, effect}
+	if err := myCard.run(); err != nil {
+		fmt.Println("Error:", err)
+	} // Call the actual function using the reference and handle error
 }

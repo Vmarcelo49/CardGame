@@ -22,7 +22,7 @@ var (
 	fontSize         = 20.0 * 10 // fits 14 characters
 )
 
-type Effect string
+//type Effect string
 
 type CardType int
 
@@ -45,8 +45,8 @@ type Card struct {
 	CType   CardType `yaml:"Type"`
 	SubType string   `yaml:"Subtype"`
 	Text    string   `yaml:"Text"`
-	Effects []Effect `yaml:"Effects"`
-	Stats   Stats    `yaml:"Stats"` //can be nil
+	Effects Effect   `yaml:"Effects"` // will be remade in the YAML file
+	Stats   Stats    `yaml:"Stats"`   //can be nil
 	// Card effect related
 	Keywords []Keyword
 	// more gerenal stuff

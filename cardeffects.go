@@ -1,36 +1,36 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 )
 
-var funcMap = map[string]func() error{
+type Effect struct {
+	name     string // maybe not needed
+	function func(args ...interface{}) error
+	args     []interface{}
+}
+
+// Runs all functions in the Funcs slice and returns a slice of errors
+func (f *Effect) Run() error {
+	err := f.function(f.args...)
+	return err
+}
+
+func newCardEffect(name string, fun func(args ...interface{}) error, args ...interface{}) Effect {
+	return Effect{
+		name:     name,
+		function: fun,
+		args:     args,
+	}
+}
+
+func (c *Card) firstCardEffExample() {
+	effect := newCardEffect("Gives a keyword to itself", giveKeyword, Attacker, c)
+	c.Effects = effect
+}
+
+var funcMap = map[string]func(args ...interface{}) error{
 	"giveKeyword": giveKeyword,
-}
-
-type Funcs struct {
-	functions []func() error
-}
-
-// Run executa todas as funções armazenadas em Funcs e retorna um slice de erros
-func (f *Funcs) Run() []error {
-	var errors []error
-	for _, fun := range f.functions {
-		err := fun()
-		if err != nil {
-			errors = append(errors, err)
-		}
-	}
-	return errors
-}
-
-func (f *Funcs) AddFuncByName(name string) error {
-	if fn, ok := funcMap[name]; ok {
-		f.functions = append(f.functions, fn)
-		return nil
-	}
-	return errors.New(fmt.Sprint("Function ", name, " not found"))
 }
 
 type Keyword uint8
@@ -42,11 +42,20 @@ const (
 	Blocker
 )
 
-func giveKeyword(key Keyword, target *Card) {
+// TODO: add when this effect should happen, on summon on the case of first card.
+func giveKeyword(args ...interface{}) error {
+	if len(args) != 2 {
+		return fmt.Errorf("expected 2 arguments, got %d", len(args))
+	}
+
+	key, ok1 := args[0].(Keyword)
+	target, ok2 := args[1].(*Card)
+	if !ok1 || !ok2 {
+		return fmt.Errorf("invalid argument types")
+	}
 	// Doesnt start a Chain
 	if target.CType != Creature {
-		fmt.Println("Card is not a creature")
-		return
+		return fmt.Errorf("Card is not a creature")
 	}
 	switch key {
 	case Attacker:
@@ -56,5 +65,5 @@ func giveKeyword(key Keyword, target *Card) {
 	case Blocker:
 		target.Keywords = append(target.Keywords, Blocker)
 	}
-
+	return nil
 }
