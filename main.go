@@ -34,9 +34,9 @@ type Game struct {
 	mainMenuButtons []*Button
 	mouse           *Mouse
 	//Duel
-	duel *Duel
-
-	texMap map[int]*ebiten.Image
+	duel        *Duel
+	exitingDuel bool
+	texMap      map[int]*ebiten.Image
 }
 
 func init() {
@@ -89,6 +89,16 @@ func newGame() *Game {
 
 func (g *Game) loadDuelMode() {
 	g.duel = newDuel()
+	g.scene = DuelScene
+}
+
+func (g *Game) loadMainMenu() {
+	g.exitingDuel = true
+	g.scene = MainMenu
+	g.createButtons()
+	g.freeImages()
+	g.duel = nil
+
 }
 
 func (g *Game) Update() error {
@@ -96,9 +106,14 @@ func (g *Game) Update() error {
 	var exit error
 	switch g.scene {
 	case DuelScene:
-		exit = logic(g)
-		g.loadImages()
+		exit = g.logic()
+		if !g.exitingDuel {
+			g.loadImages()
+		}
 	case MainMenu:
+		if g.exitingDuel {
+			g.exitingDuel = false
+		}
 		if g.mainMenuButtons == nil {
 			g.mainMenuButtons, _ = g.createButtons()
 		}

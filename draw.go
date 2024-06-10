@@ -4,10 +4,12 @@ import (
 	"bytes"
 	"fmt"
 	"image"
+	"image/color"
 	"log"
 	"os"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/vector"
 )
 
 // A imbutida do ebitenutil.NewImageFromFile não é recomendada para uso em produção, então não irei usar.
@@ -51,10 +53,44 @@ func (g *Game) loadImages() {
 
 func (g *Game) freeImages() {
 	for key := range g.texMap {
-		// 0 é a imagem padrão, não precisa ser deletada
-		if key == 0 {
+		// frame e facedown não são imagens de cartas, então não precisam ser deletadas
+		if key == 0 || key == -1 {
 			continue
 		}
 		delete(g.texMap, key)
 	}
+}
+
+func (c *Card) draw(screen *ebiten.Image, cardImage *ebiten.Image) {
+	op := &ebiten.DrawImageOptions{}
+	op.GeoM.Scale(c.ScaleX, c.ScaleY) //always scale first
+	op.GeoM.Translate(float64(c.X), float64(c.Y))
+	screen.DrawImage(cardImage, op)
+}
+
+func (d *Deck) draw(screen *ebiten.Image, cardBack *ebiten.Image) {
+	// A carta virada para baixo é uma imagem de escopo global e não é algo diretamente relacionado com o deck.
+
+	op := &ebiten.DrawImageOptions{}
+	op.GeoM.Scale(scalingFactor, scalingFactor) //segue o padrão de escala, sempre escalar primeiro
+	op.GeoM.Translate(float64(d.X), float64(d.Y))
+	screen.DrawImage(cardBack, op)
+}
+
+func (f *Field) draw(screen *ebiten.Image, textureMap map[int]*ebiten.Image) {
+	if len(f.player1Field) > 0 {
+		contador = f.player1Field[0].W
+	}
+	for i, card := range f.player1Field {
+		card.X = (screenHeight / 2) + (contador * i)
+		card.Y = int(f.middlescreen)
+		card.draw(screen, textureMap[card.ID])
+	}
+
+	for _, card := range f.player2Field {
+		// but where lol TODO: fix player 2
+		card.draw(screen, textureMap[card.ID])
+	}
+
+	vector.DrawFilledRect(screen, 0, f.middlescreen, screenWidth, 2, color.RGBA{R: 255, G: 255, B: 255, A: 255}, false)
 }

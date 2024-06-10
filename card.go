@@ -77,14 +77,6 @@ func (c *Card) resetScale() {
 	c.ScaleY = scalingFactor
 }
 
-// function to draw the card, first translate to the position of the card, then draw the image
-func (c *Card) draw(screen *ebiten.Image, cardImage *ebiten.Image) {
-	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Scale(c.ScaleX, c.ScaleY) //always scale first
-	op.GeoM.Translate(float64(c.X), float64(c.Y))
-	screen.DrawImage(cardImage, op)
-}
-
 // Cria uma carta com texto e o frame da carta
 func createCardImage(cardFrameIm *ebiten.Image, cardName, pathCardArt string) (*ebiten.Image, error) {
 	CardArt, err := createImageFromPath(pathCardArt)

@@ -25,7 +25,7 @@ func sendCardTo(destination []*Card, source []*Card, index int) ([]*Card, []*Car
 }
 
 // TODO: Fazer funcionar para os dois lados do campo
-func selectCard(g *Game) {
+func (g *Game) selectCard() {
 	for i, card := range g.duel.p1Hand.cards {
 		if card.in(g.mouse.X, g.mouse.Y) {
 			card.ScaleX = 0.11 //trocar isso por um highlight no momento causa problemas em resoluções diferentes TODO
@@ -42,7 +42,7 @@ func selectCard(g *Game) {
 	}
 }
 
-func deselectOrMoveCard(g *Game) {
+func (g *Game) deselectOrMoveCard() {
 	if g.mouse.LeftPressed {
 		if !g.duel.p1Hand.cards[SelectedCardIndex].in(g.mouse.X, g.mouse.Y) && g.mouse.Y > g.duel.p1Hand.coordY {
 			g.duel.p1Hand.cards[SelectedCardIndex].resetScale()
@@ -63,12 +63,12 @@ func deselectOrMoveCard(g *Game) {
 	}
 }
 
-func logic(g *Game) error {
+func (g *Game) logic() error {
 	if SelectedCardIndex == -1 {
-		selectCard(g)
+		g.selectCard()
 	}
 	if SelectedCardIndex > -1 {
-		deselectOrMoveCard(g)
+		g.deselectOrMoveCard()
 	}
 
 	// Who goes first
@@ -76,5 +76,5 @@ func logic(g *Game) error {
 
 	// if 0, its beginning of the game, decide who goes first, then draw cards
 
-	return keyboardInput(g.duel.p1Deck, g.duel.p1Hand)
+	return g.keyboardInput()
 }

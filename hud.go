@@ -62,13 +62,12 @@ func addButton(buttonSlice []*Button, text string, function func() error) []*But
 	return buttonSlice
 }
 
-// make the buttons return errors later
+// Cria os botões do menu principal
 func (g *Game) createButtons() ([]*Button, error) {
 	var buttons []*Button
 	buttons = addButton(buttons, "Duel", func() error {
 		g.loadDuelMode()
 		g.mainMenuButtons = nil // Go doesn clear the buttons, so we need to do it manually
-		g.scene = DuelScene
 
 		return nil
 	})

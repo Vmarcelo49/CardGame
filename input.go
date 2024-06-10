@@ -18,14 +18,12 @@ func (m *Mouse) UpdateMouseState() {
 	m.MiddlePressed = ebiten.IsMouseButtonPressed(ebiten.MouseButtonMiddle)
 }
 
-func keyboardInput(deck *Deck, hand *Hand) error {
+func (g *Game) keyboardInput() error {
 	if ebiten.IsKeyPressed(ebiten.KeySpace) {
-		deck.drawCard(hand)
+		g.duel.p1Deck.drawCard(g.duel.p1Hand)
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyEscape) {
-		//maluquice do caralho, pq retornar um erro pra fechar o jogo?
-		// TODO: Mudar para voltar ao menu depois
-		return ebiten.Termination
+		g.loadMainMenu()
 	}
 	return nil
 }

@@ -3,8 +3,6 @@ package main
 import (
 	"errors"
 	"log"
-
-	"github.com/hajimehoshi/ebiten/v2"
 )
 
 type Deck struct {
@@ -44,17 +42,6 @@ func newDeck(deckFilePath string, player int) *Deck {
 		deck.Y = -1 * (screenHeight / 8)
 	}
 	return deck
-}
-
-// drawDeck desenha a imagem de carta virada para baixo no deck.
-
-func (d *Deck) draw(screen *ebiten.Image, cardBack *ebiten.Image) {
-	// A carta virada para baixo é uma imagem de escopo global e não é algo diretamente relacionado com o deck.
-
-	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Scale(scalingFactor, scalingFactor) //segue o padrão de escala, sempre escalar primeiro
-	op.GeoM.Translate(float64(d.X), float64(d.Y))
-	screen.DrawImage(cardBack, op)
 }
 
 // drawCard, coloca a carta 0 do slice em uma variavel temporaria, remove a carta do slice do deck e coloca a carta na mão recebida como argumento.
