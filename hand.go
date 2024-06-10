@@ -5,13 +5,13 @@ type Hand struct {
 	coordY int
 }
 
-func newHand() *Hand {
-	hand := new(Hand)
-	// cooordY is 7/8 of the screen height, on the bottom of the screen
-	hand.coordY = 7 * (screenHeight / 8)
-	hand.cards = make([]*Card, 0)
-	return hand
+const handCoordY = 7 * (screenHeight / 8)
 
+func newHand() *Hand {
+	return &Hand{
+		coordY: handCoordY,
+		cards:  nil,
+	}
 }
 
 func (h *Hand) addCard(newCard *Card) {

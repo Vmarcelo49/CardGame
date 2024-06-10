@@ -10,8 +10,11 @@ type Duel struct {
 
 }
 
+const (
+	placeHolderDeck = "Deck/testDeck.txt"
+)
+
 func (g *Game) newDuel() *Duel {
-	placeHolderDeck := "Deck/testDeck.txt"
 
 	duel := new(Duel)
 

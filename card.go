@@ -113,7 +113,6 @@ func createCardImage(cardFrameIm *ebiten.Image, cardName, pathCardArt string) (*
 	return image, nil
 }
 
-// TODO possivel local do memory leak
 func newCardFromID(id int, w, h int) (*Card, error) {
 	card, err := parseCard(id)
 	if err != nil {
