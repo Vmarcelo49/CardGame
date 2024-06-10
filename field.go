@@ -7,7 +7,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/vector"
 )
 
-var valor int
+var contador int
 
 type Field struct {
 	player1Field []*Card
@@ -27,18 +27,19 @@ func newField() *Field {
 	return field
 }
 
-func (f *Field) draw(screen *ebiten.Image) {
+func (f *Field) draw(screen *ebiten.Image, textureMap map[int]*ebiten.Image) {
 	if len(f.player1Field) > 0 {
-		valor = f.player1Field[0].W
+		contador = f.player1Field[0].W
 	}
 	for i, card := range f.player1Field {
-		card.X = (screenHeight / 2) + (valor * i)
+		card.X = (screenHeight / 2) + (contador * i)
 		card.Y = int(f.middlescreen)
-		card.draw(screen)
+		card.draw(screen, textureMap[card.ID])
 	}
 
 	for _, card := range f.player2Field {
-		card.draw(screen)
+		// but where lol TODO: fix player 2
+		card.draw(screen, textureMap[card.ID])
 	}
 
 	vector.DrawFilledRect(screen, 0, f.middlescreen, screenWidth, 2, color.RGBA{R: 255, G: 255, B: 255, A: 255}, false)

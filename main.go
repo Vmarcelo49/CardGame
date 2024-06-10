@@ -5,16 +5,15 @@ import (
 	"fmt"
 	"image/color"
 	"log"
+	_ "net/http/pprof"
 	"os"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/text/v2"
 )
 
 var (
 	backgroundColor = color.RGBA{R: 31, G: 31, B: 31, A: 255}
-	cardBack        *ebiten.Image
 	font            *text.GoTextFaceSource
 )
 
@@ -24,7 +23,7 @@ const (
 	//
 	MainMenu Scene = iota
 	RockPaperScissors
-	Duel
+	DuelScene
 )
 
 type Scene uint8
@@ -33,13 +32,11 @@ type Game struct {
 	//Main Menu
 	scene           Scene
 	mainMenuButtons []*Button
+	mouse           *Mouse
 	//Duel
-	mouse     *Mouse
-	hand      *Hand
-	deck      *Deck
-	field     *Field
-	turnCount int
-	//RockPaperScissors
+	duel *Duel
+
+	texMap map[int]*ebiten.Image
 }
 
 func init() {
@@ -74,56 +71,42 @@ func getScalingFactor(currentWidth, currentHeight int) float64 {
 }
 
 func newGame() *Game {
+	back, err := createImageFromPath("Image/CardFrame/CardBackside.png")
+	frame, err := createImageFromPath("Image/CardFrame/CardFrame.png")
+	if err != nil {
+		log.Panic(err)
+	}
+	texMap := map[int]*ebiten.Image{
+		-1: frame,
+		0:  back,
+	}
 	return &Game{
-		mouse: &Mouse{},
-		hand:  &Hand{},
-		deck:  &Deck{},
-		field: &Field{},
-		scene: MainMenu,
+		mouse:  &Mouse{},
+		scene:  MainMenu,
+		texMap: texMap,
 	}
 
 }
 
 func (g *Game) loadDuelMode() {
-	//currently only for p1
-	var err error
-	cardBack, _, err = ebitenutil.NewImageFromFile("Image/CardFrame/CardBackside.png")
-	if err != nil {
-		log.Panic(err)
-	}
-	// Todo: make the card images separate from the card object
-
-	g.hand = newHand()
-
-	cardIDS, err := getCardIDs("Deck/testDeck.txt")
-	if err != nil {
-		log.Panic(err)
-	}
-	g.deck = newDeck()
-
-	for _, id := range cardIDS {
-		card, err := newCardFromID(id)
-		if err != nil {
-			log.Panic(err)
-		}
-		g.deck.cards = append(g.deck.cards, card)
-	}
-
-	g.field = newField()
+	g.duel = newDuel()
 }
 
 func (g *Game) Update() error {
 	g.mouse.UpdateMouseState()
 	var exit error
 	switch g.scene {
-	case Duel:
+	case DuelScene:
 		exit = logic(g)
+		g.loadImages()
 	case MainMenu:
 		if g.mainMenuButtons == nil {
 			g.mainMenuButtons, _ = g.createButtons()
 		}
 		for _, b := range g.mainMenuButtons {
-			exit = b.checkClicked(g.mouse)
+			if !b.alreadClicked {
+				exit = b.checkClicked(g.mouse)
+			}
 		}
 
 	case RockPaperScissors:
@@ -137,25 +120,37 @@ func (g *Game) Update() error {
 
 func (g *Game) DrawDuel(screen *ebiten.Image) {
 	screen.Fill(backgroundColor)
-	debugText := fmt.Sprintf("Cards in Hand: %d, Cards on Field %d", len(g.hand.cards), len(g.field.player1Field))
-	ebitenutil.DebugPrint(screen, debugText)
-	g.deck.draw(screen)
-	g.field.draw(screen)
-	for _, card := range g.hand.cards {
-		card.draw(screen)
+
+	g.duel.p1Deck.draw(screen, g.texMap[0])
+	g.duel.p2Deck.draw(screen, g.texMap[0])
+
+	for _, card := range g.duel.p1Hand.cards {
+		if g.texMap[card.ID] == nil {
+			log.Panic(fmt.Sprintln("Card ID: ", card.ID, " is nil"))
+			card.draw(screen, g.texMap[0])
+		}
+		card.draw(screen, g.texMap[card.ID])
 	}
+	for i := range g.duel.p2Hand.cards {
+		op := &ebiten.DrawImageOptions{}
+		op.GeoM.Translate(float64(g.duel.p2Hand.cards[i].X), float64(g.duel.p2Hand.cards[i].Y))
+
+		screen.DrawImage(g.texMap[0], op)
+
+	}
+	g.duel.field.draw(screen, g.texMap)
+	// g.duel.p1GY.draw(screen, lastCardSentToP1GY.ID, g.texMap)
+
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
 	switch g.scene {
-	case Duel:
+	case DuelScene:
 		g.DrawDuel(screen)
 	case MainMenu:
 		g.DrawMainMenu(screen)
-		//menu logic
 	case RockPaperScissors:
 		fmt.Println("RockPaperScissors")
-		//rock paper scissors logic
 	}
 
 }

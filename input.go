@@ -24,6 +24,7 @@ func keyboardInput(deck *Deck, hand *Hand) error {
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyEscape) {
 		//maluquice do caralho, pq retornar um erro pra fechar o jogo?
+		// TODO: Mudar para voltar ao menu depois
 		return ebiten.Termination
 	}
 	return nil

@@ -1,28 +1,39 @@
 package main
 
 import (
+	"bufio"
+	"fmt"
 	"os"
 	"strconv"
 	"strings"
 )
 
 func getCardIDs(filename string) ([]int, error) {
-	fileBytes, err := os.ReadFile(filename)
+	var cardIDs []int
+	file, err := os.Open(filename)
 	if err != nil {
 		return nil, err
 	}
-	var cardIDs []int
-	lines := strings.Split(string(fileBytes), "\n")
-	for _, line := range lines {
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		line := scanner.Text()
 		line = strings.TrimSpace(line) // Trim whitespace
 		if line == "" {
 			continue // Skip empty lines
 		}
 		cardID, err := strconv.Atoi(line)
 		if err != nil {
-			return nil, err
+			fmt.Printf("Failed to convert '%s' to integer: %v\n", line, err)
+			continue // Skip this line and continue with the next
 		}
 		cardIDs = append(cardIDs, cardID)
 	}
+
+	if err := scanner.Err(); err != nil {
+		return nil, fmt.Errorf("error scanning file: %w", err)
+	}
+
 	return cardIDs, nil
 }

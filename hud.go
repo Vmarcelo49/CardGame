@@ -15,9 +15,10 @@ type HUDDuel struct {
 }
 
 type Button struct {
-	x, y     int
-	image    *ebiten.Image
-	function func() error
+	x, y, w, h    int
+	image         *ebiten.Image
+	function      func() error
+	alreadClicked bool
 }
 
 func newButton(x, y int, texto string, function func() error) *Button {
@@ -34,11 +35,13 @@ func newButton(x, y int, texto string, function func() error) *Button {
 		Size:   20.0,
 	}, textOp)
 
-	return &Button{x, y, newImage, function}
+	return &Button{x, y, screenWidth / 8, screenHeight / 8, newImage, function, false}
 }
 
 func (b *Button) checkClicked(m *Mouse) error {
-	if m.X > b.x && m.X < b.x+b.image.Bounds().Dy() && m.Y > b.y && m.Y < b.y+b.image.Bounds().Dx() && m.LeftPressed {
+	if m.X > b.x && m.X < b.x+b.w && m.Y > b.y && m.Y < b.y+b.h && m.LeftPressed {
+		b.alreadClicked = true
+		fmt.Println("Button clicked")
 		return b.function()
 	}
 	return nil
@@ -65,7 +68,7 @@ func (g *Game) createButtons() ([]*Button, error) {
 	buttons = addButton(buttons, "Duel", func() error {
 		g.loadDuelMode()
 		g.mainMenuButtons = nil // Go doesn clear the buttons, so we need to do it manually
-		g.scene = Duel
+		g.scene = DuelScene
 
 		return nil
 	})

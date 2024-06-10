@@ -24,8 +24,9 @@ func sendCardTo(destination []*Card, source []*Card, index int) ([]*Card, []*Car
 	return destination, source, nil
 }
 
+// TODO: Fazer funcionar para os dois lados do campo
 func selectCard(g *Game) {
-	for i, card := range g.hand.cards {
+	for i, card := range g.duel.p1Hand.cards {
 		if card.in(g.mouse.X, g.mouse.Y) {
 			card.ScaleX = 0.11 //trocar isso por um highlight no momento causa problemas em resoluções diferentes TODO
 			card.ScaleY = 0.11
@@ -43,14 +44,14 @@ func selectCard(g *Game) {
 
 func deselectOrMoveCard(g *Game) {
 	if g.mouse.LeftPressed {
-		if !g.hand.cards[SelectedCardIndex].in(g.mouse.X, g.mouse.Y) && g.mouse.Y > g.hand.coordY {
-			g.hand.cards[SelectedCardIndex].resetScale()
+		if !g.duel.p1Hand.cards[SelectedCardIndex].in(g.mouse.X, g.mouse.Y) && g.mouse.Y > g.duel.p1Hand.coordY {
+			g.duel.p1Hand.cards[SelectedCardIndex].resetScale()
 			SelectedCardIndex = -1
 		}
-		if g.mouse.Y < g.hand.coordY {
+		if g.mouse.Y < g.duel.p1Hand.coordY {
 			var err error
-			g.hand.cards[SelectedCardIndex].resetScale()
-			g.field.player1Field, g.hand.cards, err = sendCardTo(g.field.player1Field, g.hand.cards, SelectedCardIndex)
+			g.duel.p1Hand.cards[SelectedCardIndex].resetScale()
+			g.duel.field.player1Field, g.duel.p1Hand.cards, err = sendCardTo(g.duel.field.player1Field, g.duel.p1Hand.cards, SelectedCardIndex)
 			if err != nil {
 				log.Println(err) // Probably should never return the error
 			}
@@ -75,5 +76,5 @@ func logic(g *Game) error {
 
 	// if 0, its beginning of the game, decide who goes first, then draw cards
 
-	return keyboardInput(g.deck, g.hand)
+	return keyboardInput(g.duel.p1Deck, g.duel.p1Hand)
 }

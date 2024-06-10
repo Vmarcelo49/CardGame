@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -17,20 +18,37 @@ type Deck struct {
 // Como a mão, o deck pode receber cartas, porém em vez de adicionar uma carta por vez, o deck recebe um slice de cartas inteiro.
 // No futuro, o meio de adicionar cartas ao deck será alterado para outro meio, como um arquivo de texto ou um banco de dados.
 
-func newDeck() *Deck {
+func newDeck(deckFilePath string, player int) *Deck {
+	cardIDS, err := getCardIDs(deckFilePath)
+	if err != nil {
+		log.Panic(err)
+	}
 	deck := new(Deck)
-	// O X do deck é 5/6 da tela, no lado direito da tela.
-	deck.X = 5 * (screenWidth / 6)
 
-	// O valor da Altura do deck é 7/8 da tela, no topo da tela, como na mão.
-	deck.Y = 7 * (screenHeight / 8)
+	for _, id := range cardIDS {
+		// me pergunto se o garbage collector vai pegar essas cartas
+		card, err := newCardFromID(id)
+		if err != nil {
+			log.Panic(err)
+		}
+		deck.cards = append(deck.cards, card)
+		card = nil
 
+	}
+	if player == 1 {
+		deck.X = 5 * (screenWidth / 6)
+		deck.Y = 7 * (screenHeight / 8)
+	}
+	if player == 2 {
+		deck.X = 1 * (screenWidth / 6)
+		deck.Y = -1 * (screenHeight / 8)
+	}
 	return deck
 }
 
 // drawDeck desenha a imagem de carta virada para baixo no deck.
 
-func (d *Deck) draw(screen *ebiten.Image) {
+func (d *Deck) draw(screen *ebiten.Image, cardBack *ebiten.Image) {
 	// A carta virada para baixo é uma imagem de escopo global e não é algo diretamente relacionado com o deck.
 
 	op := &ebiten.DrawImageOptions{}
