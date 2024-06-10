@@ -10,13 +10,13 @@ type Duel struct {
 
 }
 
-func newDuel() *Duel {
+func (g *Game) newDuel() *Duel {
 	placeHolderDeck := "Deck/testDeck.txt"
 
 	duel := new(Duel)
 
-	duel.p1Deck = newDeck(placeHolderDeck, 1)
-	duel.p2Deck = newDeck(placeHolderDeck, 2)
+	duel.p1Deck = newDeck(placeHolderDeck, 1, g.texMap[0].Bounds().Dx(), g.texMap[0].Bounds().Dy())
+	duel.p2Deck = newDeck(placeHolderDeck, 2, g.texMap[0].Bounds().Dx(), g.texMap[0].Bounds().Dy())
 	duel.field = newField()
 
 	// TODO: implementar p2 e o rps

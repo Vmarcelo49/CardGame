@@ -16,7 +16,7 @@ type Deck struct {
 // Como a mão, o deck pode receber cartas, porém em vez de adicionar uma carta por vez, o deck recebe um slice de cartas inteiro.
 // No futuro, o meio de adicionar cartas ao deck será alterado para outro meio, como um arquivo de texto ou um banco de dados.
 
-func newDeck(deckFilePath string, player int) *Deck {
+func newDeck(deckFilePath string, player int, cardWidth, cardHeight int) *Deck {
 	cardIDS, err := getCardIDs(deckFilePath)
 	if err != nil {
 		log.Panic(err)
@@ -24,13 +24,11 @@ func newDeck(deckFilePath string, player int) *Deck {
 	deck := new(Deck)
 
 	for _, id := range cardIDS {
-		// me pergunto se o garbage collector vai pegar essas cartas
-		card, err := newCardFromID(id)
+		card, err := newCardFromID(id, cardWidth, cardHeight)
 		if err != nil {
 			log.Panic(err)
 		}
 		deck.cards = append(deck.cards, card)
-		card = nil
 
 	}
 	if player == 1 {

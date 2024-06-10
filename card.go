@@ -44,8 +44,8 @@ type Card struct {
 	CType   CardType `yaml:"Type"`
 	SubType string   `yaml:"Subtype"`
 	Text    string   `yaml:"Text"`
-	Effects Effect   `yaml:"Effects"` // will be remade in the YAML file
-	Stats   Stats    `yaml:"Stats"`   //can be nil
+	Effects Effect   //`yaml:"Effects"` // will be remade in the YAML file
+	Stats   Stats    `yaml:"Stats"` //can be nil
 	// Card effect related
 	Keywords []Keyword
 	// more gerenal stuff
@@ -113,25 +113,18 @@ func createCardImage(cardFrameIm *ebiten.Image, cardName, pathCardArt string) (*
 	return image, nil
 }
 
-func newCardFromID(id int) (*Card, error) {
+// TODO possivel local do memory leak
+func newCardFromID(id int, w, h int) (*Card, error) {
 	card, err := parseCard(id)
-	cardFrameIm := new(ebiten.Image)
-	if card.CType == 0 { // will be changed to handle other types of cards
-		cardFrameIm, err = createImageFromPath("Image/CardFrame/CardFrame.png")
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	card.ScaleX = scalingFactor
-	card.ScaleY = scalingFactor
-
-	card.W = int(float64(cardFrameIm.Bounds().Dx()) * scalingFactor)
-	card.H = int(float64(cardFrameIm.Bounds().Dy()) * scalingFactor)
 	if err != nil {
 		return nil, err
 	}
-	cardFrameIm.Deallocate()
+	card.ScaleX = scalingFactor
+	card.ScaleY = scalingFactor
+
+	card.W = int(float64(w) * scalingFactor)
+	card.H = int(float64(h) * scalingFactor)
+
 	return card, nil
 
 }

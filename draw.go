@@ -59,6 +59,7 @@ func (g *Game) freeImages() {
 		}
 		delete(g.texMap, key)
 	}
+
 }
 
 func (c *Card) draw(screen *ebiten.Image, cardImage *ebiten.Image) {

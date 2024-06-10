@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"image/color"
 	"log"
-	_ "net/http/pprof"
 	"os"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -72,6 +71,9 @@ func getScalingFactor(currentWidth, currentHeight int) float64 {
 
 func newGame() *Game {
 	back, err := createImageFromPath("Image/CardFrame/CardBackside.png")
+	if err != nil {
+		log.Panic(err)
+	}
 	frame, err := createImageFromPath("Image/CardFrame/CardFrame.png")
 	if err != nil {
 		log.Panic(err)
@@ -88,14 +90,13 @@ func newGame() *Game {
 }
 
 func (g *Game) loadDuelMode() {
-	g.duel = newDuel()
+	g.duel = g.newDuel()
 	g.scene = DuelScene
 }
 
 func (g *Game) loadMainMenu() {
 	g.exitingDuel = true
 	g.scene = MainMenu
-	g.createButtons()
 	g.freeImages()
 	g.duel = nil
 
@@ -106,7 +107,7 @@ func (g *Game) Update() error {
 	var exit error
 	switch g.scene {
 	case DuelScene:
-		exit = g.logic()
+		g.logic()
 		if !g.exitingDuel {
 			g.loadImages()
 		}
@@ -114,7 +115,7 @@ func (g *Game) Update() error {
 		if g.exitingDuel {
 			g.exitingDuel = false
 		}
-		if g.mainMenuButtons == nil {
+		if g.mainMenuButtons == nil { // gostei dessa abordagem
 			g.mainMenuButtons, _ = g.createButtons()
 		}
 		for _, b := range g.mainMenuButtons {
@@ -124,7 +125,7 @@ func (g *Game) Update() error {
 		}
 
 	case RockPaperScissors:
-		//rock paper scissors logic
+		// TODO
 	}
 
 	// Can return the error to end the game.

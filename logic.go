@@ -63,7 +63,7 @@ func (g *Game) deselectOrMoveCard() {
 	}
 }
 
-func (g *Game) logic() error {
+func (g *Game) logic() {
 	if SelectedCardIndex == -1 {
 		g.selectCard()
 	}
@@ -76,5 +76,5 @@ func (g *Game) logic() error {
 
 	// if 0, its beginning of the game, decide who goes first, then draw cards
 
-	return g.keyboardInput()
+	g.keyboardInput()
 }
