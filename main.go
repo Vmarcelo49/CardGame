@@ -76,10 +76,9 @@ func newGame() *Game {
 	if err != nil {
 		log.Panic(err)
 	}
-	texMap := map[int]*ebiten.Image{
-		-1: frame,
-		0:  back,
-	}
+	texMap := make(map[int]*ebiten.Image)
+	texMap[-1] = frame
+	texMap[0] = back
 	return &Game{
 		mouse:  &Mouse{},
 		scene:  MainMenu,
