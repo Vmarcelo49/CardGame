@@ -157,6 +157,6 @@ func parseCard(id int) (*Card, error) {
 	card := new(Card)
 
 	err = yaml.Unmarshal(file, card) // card is not being filled
-	fmt.Println(card.Name, card.ID, card.CType, card.SubType, card.Text, card.Effects, card.Stats)
+	// fmt.Println(card.Name, card.ID, card.CType, card.SubType, card.Text, card.Effects, card.Stats)
 	return card, err
 }

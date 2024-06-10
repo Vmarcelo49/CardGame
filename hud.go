@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"image/color"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -16,10 +17,10 @@ type HUDDuel struct {
 type Button struct {
 	x, y     int
 	image    *ebiten.Image
-	function func()
+	function func() error
 }
 
-func newButton(x, y int, texto string, function func()) *Button {
+func newButton(x, y int, texto string, function func() error) *Button {
 	newImage := ebiten.NewImage(screenWidth/8, screenHeight/8)
 	newImage.Fill(color.White)
 
@@ -30,18 +31,17 @@ func newButton(x, y int, texto string, function func()) *Button {
 
 	text.Draw(newImage, texto, &text.GoTextFace{
 		Source: font,
-		Size:   fontSize,
+		Size:   20.0,
 	}, textOp)
 
 	return &Button{x, y, newImage, function}
 }
 
-func (b *Button) checkClicked(m *Mouse) {
-	if m.X > b.x && m.X < b.x+b.image.Bounds().Dy() && m.Y > b.y && m.Y < b.y+b.image.Bounds().Dx() && m.LeftPressed == true {
-		b.function()
-		return
+func (b *Button) checkClicked(m *Mouse) error {
+	if m.X > b.x && m.X < b.x+b.image.Bounds().Dy() && m.Y > b.y && m.Y < b.y+b.image.Bounds().Dx() && m.LeftPressed {
+		return b.function()
 	}
-	return
+	return nil
 }
 
 func (b *Button) draw(screen *ebiten.Image) {
@@ -50,11 +50,35 @@ func (b *Button) draw(screen *ebiten.Image) {
 	screen.DrawImage(b.image, op)
 }
 
-func addButton(buttonSlice []*Button, image *ebiten.Image, text string, function func()) []*Button {
-	x := (screenWidth - image.Bounds().Dx()) / 2
-	y := (screenHeight-image.Bounds().Dy())/2 + len(buttonSlice)*(image.Bounds().Dy()+10)
+func addButton(buttonSlice []*Button, text string, function func() error) []*Button {
+	buttonX := screenWidth / 8
+	buttonY := screenHeight / 8
+	x := (screenWidth - buttonX) / 2
+	y := (screenHeight-buttonY)/2 + len(buttonSlice)*(buttonY+10)
 	buttonSlice = append(buttonSlice, newButton(x, y, text, function))
 	return buttonSlice
+}
+
+// make the buttons return errors later
+func (g *Game) createButtons() ([]*Button, error) {
+	var buttons []*Button
+	buttons = addButton(buttons, "Duel", func() error {
+		g.loadDuelMode()
+		g.mainMenuButtons = nil // Go doesn clear the buttons, so we need to do it manually
+		g.scene = Duel
+
+		return nil
+	})
+	buttons = addButton(buttons, "Deck Editor", func() error {
+		fmt.Println("Soon...")
+		return nil
+	})
+	buttons = addButton(buttons, "Exit", func() error {
+		return ebiten.Termination
+	})
+
+	return buttons, nil
+
 }
 
 func (g *Game) DrawMainMenu(screen *ebiten.Image) {

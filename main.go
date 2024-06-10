@@ -79,6 +79,7 @@ func newGame() *Game {
 		hand:  &Hand{},
 		deck:  &Deck{},
 		field: &Field{},
+		scene: MainMenu,
 	}
 
 }
@@ -118,11 +119,13 @@ func (g *Game) Update() error {
 	case Duel:
 		exit = logic(g)
 	case MainMenu:
-		//menu logic
+		if g.mainMenuButtons == nil {
+			g.mainMenuButtons, _ = g.createButtons()
+		}
+		for _, b := range g.mainMenuButtons {
+			exit = b.checkClicked(g.mouse)
+		}
 
-		// then
-		g.scene = Duel
-		g.loadDuelMode()
 	case RockPaperScissors:
 		//rock paper scissors logic
 	}

@@ -1,7 +1,5 @@
 package main
 
-import "fmt"
-
 type Hand struct {
 	cards  []*Card
 	coordY int
@@ -32,6 +30,6 @@ func (h *Hand) addCard(newCard *Card) {
 		newCard.X += lastCard.X + lastCard.W
 		newCard.Y = h.coordY
 		h.cards = append(h.cards, newCard)
-		fmt.Println("Cards in hand:", len(h.cards))
+		// fmt.Println("Cards in hand:", len(h.cards))
 	}
 }
