@@ -25,9 +25,10 @@ func (h *Hand) addCard(newCard *Card) {
 			card.X -= card.W / 2
 			card.Y = h.coordY
 		}
-		// Place the new card to the right of the last card
-		lastCard := h.cards[len(h.cards)-1]
-		newCard.X += lastCard.X + lastCard.W
+		// Place the new card to the side of the last card
+		lastCardX := h.cards[len(h.cards)-1].X
+		lastCardW := h.cards[len(h.cards)-1].W
+		newCard.X += lastCardX + lastCardW
 		newCard.Y = h.coordY
 		h.cards = append(h.cards, newCard)
 		// fmt.Println("Cards in hand:", len(h.cards))

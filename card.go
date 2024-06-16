@@ -49,10 +49,11 @@ type Card struct {
 	// Card effect related
 	Keywords []Keyword
 	// more gerenal stuff
-	X, Y           int
-	W, H           int
-	ScaleX, ScaleY float64
-	Selected       bool
+	X, Y                           int
+	W, H                           int
+	ScaleX, ScaleY                 float64
+	SelectedScaleX, SelectedScaleY float64
+	Selected                       bool
 	// ebiten stuff
 	//Image *ebiten.Image //should be removed later, check Draw
 }
@@ -69,7 +70,8 @@ func (c *Card) moveTo(x, y int) {
 }
 
 func (c *Card) in(x, y int) bool {
-	return x > c.X && x < c.X+int(float64(c.W)*c.ScaleX) && y > c.Y && y < c.Y+int(float64(c.H)*c.ScaleY)
+	return x > c.X && x < c.X+c.W && y > c.Y && y < c.Y+c.H
+	//return x > c.X && x < c.X+int(float64(c.W)*c.ScaleX) && y > c.Y && y < c.Y+int(float64(c.H)*c.ScaleY) // if scaling is needed
 }
 
 func (c *Card) resetScale() {
@@ -113,13 +115,16 @@ func createCardImage(cardFrameIm *ebiten.Image, cardName, pathCardArt string) (*
 	return image, nil
 }
 
-func newCardFromID(id int, w, h int) (*Card, error) {
+func newCardFromID(id, w, h int) (*Card, error) {
 	card, err := parseCard(id)
 	if err != nil {
 		return nil, err
 	}
 	card.ScaleX = scalingFactor
 	card.ScaleY = scalingFactor
+
+	card.SelectedScaleX = scalingFactor * 1.1
+	card.SelectedScaleY = scalingFactor * 1.1
 
 	card.W = int(float64(w) * scalingFactor)
 	card.H = int(float64(h) * scalingFactor)
@@ -136,7 +141,7 @@ func parseCard(id int) (*Card, error) {
 	}
 	card := new(Card)
 
-	err = yaml.Unmarshal(file, card) // card is not being filled
+	err = yaml.Unmarshal(file, card)
 	// fmt.Println(card.Name, card.ID, card.CType, card.SubType, card.Text, card.Effects, card.Stats)
 	return card, err
 }

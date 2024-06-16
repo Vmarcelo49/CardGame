@@ -32,7 +32,7 @@ func (g *Game) loadImages() {
 	for _, card := range g.duel.p1Hand.cards {
 		if _, ok := g.texMap[card.ID]; !ok {
 			fmt.Println("Carregando imagem de ID:", card.ID)
-			img, err := createCardImage(g.texMap[0], card.Name, fmt.Sprint("Image/CardArt/", card.ID, ".png"))
+			img, err := createCardImage(g.texMap[-1], card.Name, fmt.Sprint("Image/CardArt/", card.ID, ".png"))
 			if err != nil {
 				log.Panic(err)
 			}
@@ -70,10 +70,8 @@ func (c *Card) draw(screen *ebiten.Image, cardImage *ebiten.Image) {
 }
 
 func (d *Deck) draw(screen *ebiten.Image, cardBack *ebiten.Image) {
-	// A carta virada para baixo é uma imagem de escopo global e não é algo diretamente relacionado com o deck.
-
 	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Scale(scalingFactor, scalingFactor) //segue o padrão de escala, sempre escalar primeiro
+	op.GeoM.Scale(scalingFactor, scalingFactor)
 	op.GeoM.Translate(float64(d.X), float64(d.Y))
 	screen.DrawImage(cardBack, op)
 }

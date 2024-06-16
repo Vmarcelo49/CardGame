@@ -18,8 +18,8 @@ func (g *Game) newDuel() *Duel {
 
 	duel := new(Duel)
 
-	duel.p1Deck = newDeck(placeHolderDeck, 1, g.texMap[0].Bounds().Dx(), g.texMap[0].Bounds().Dy())
-	duel.p2Deck = newDeck(placeHolderDeck, 2, g.texMap[0].Bounds().Dx(), g.texMap[0].Bounds().Dy())
+	duel.p1Deck = newDeck(placeHolderDeck, 1, g.texMap[-1].Bounds().Dx(), g.texMap[-1].Bounds().Dy())
+	duel.p2Deck = newDeck(placeHolderDeck, 2, g.texMap[-1].Bounds().Dx(), g.texMap[-1].Bounds().Dy())
 	duel.field = newField()
 
 	// TODO: implementar p2 e o rps

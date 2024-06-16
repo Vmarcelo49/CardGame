@@ -28,8 +28,8 @@ func sendCardTo(destination []*Card, source []*Card, index int) ([]*Card, []*Car
 func (g *Game) selectCard() {
 	for i, card := range g.duel.p1Hand.cards {
 		if card.in(g.mouse.X, g.mouse.Y) {
-			card.ScaleX = 0.11 //trocar isso por um highlight no momento causa problemas em resoluções diferentes TODO
-			card.ScaleY = 0.11
+			card.ScaleX = card.SelectedScaleX
+			card.ScaleY = card.SelectedScaleY
 			if g.mouse.LeftPressed {
 				card.Selected = true // Maybe not needed
 				SelectedCardIndex = i
@@ -67,7 +67,7 @@ func (g *Game) logic() {
 	if SelectedCardIndex == -1 {
 		g.selectCard()
 	}
-	if SelectedCardIndex > -1 {
+	if SelectedCardIndex != -1 {
 		g.deselectOrMoveCard()
 	}
 
