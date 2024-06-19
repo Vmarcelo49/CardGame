@@ -7,7 +7,6 @@ import (
 	"os"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/text/v2"
 	"gopkg.in/yaml.v3"
 )
 
@@ -80,7 +79,7 @@ func (c *Card) resetScale() {
 }
 
 // Cria uma carta com texto e o frame da carta
-func createCardImage(cardFrameIm *ebiten.Image, cardName, pathCardArt string) (*ebiten.Image, error) {
+func createCardImage(cardFrameIm *ebiten.Image, cardName, cardEff, pathCardArt string) (*ebiten.Image, error) {
 	CardArt, err := createImageFromPath(pathCardArt)
 	if err != nil {
 		return nil, err
@@ -93,24 +92,20 @@ func createCardImage(cardFrameIm *ebiten.Image, cardName, pathCardArt string) (*
 	image.DrawImage(cardFrameIm, op)
 	op.GeoM.Translate(margemHorizontal, margemVertical)
 	image.DrawImage(CardArt, op)
+	op.GeoM.Reset()
 
-	// text
-	// todo: justify text
-	if len(cardName) > 14 {
-		fontSize = 15.0 * 10 // fits 22 characters
-	}
+	// Draw no nome da carta
+	op.GeoM.Translate(border, border)
+	fontSize = float64(cardFrameIm.Bounds().Dx()) / 10 // this image is huge, so the font size is also huge
+	textIm := newTextImageMultiline(cardName, color.White, fontSize, int(cardFrameIm.Bounds().Dx())-int(border))
+	image.DrawImage(textIm, op)
+	op.GeoM.Reset()
 
-	textOp := &text.DrawOptions{}
-	textOp.GeoM.Translate(border, border)
-	textOp.ColorScale.ScaleWithColor(color.White)
-
-	text.Draw(image, cardName, &text.GoTextFace{
-		Source: font,
-		Size:   fontSize,
-	}, textOp)
-
-	// reset font size
-	fontSize = 20.0 * 10
+	// Draw no texto da carta
+	op.GeoM.Translate(border, float64(CardArt.Bounds().Dy()+int(margemVertical))+border)
+	effImg := newTextImageMultiline(cardEff, color.White, fontSize, int(cardFrameIm.Bounds().Dx())-int(border))
+	image.DrawImage(effImg, op)
+	op.GeoM.Reset()
 
 	return image, nil
 }

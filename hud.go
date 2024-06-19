@@ -3,22 +3,98 @@ package main
 import (
 	"fmt"
 	"image/color"
+	"strings"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/text/v2"
 )
 
-type HUDDuel struct {
-	player1Health, player2Health int
-	featuredCard                 *ebiten.Image
+// Retorna uma lista de strings que cabem dentro de uma largura máxima
+func breakTextIntoLines(txt string, fontsize float64, maxWidth int) []string {
+	var lines []string
+
+	face := &text.GoTextFace{
+		Source: font,
+		Size:   fontsize,
+	}
+	words := strings.Fields(txt)
+	if len(words) == 0 {
+		return lines
+	}
+
+	currentLine := words[0]
+	var textW float64
+	for _, word := range words[1:] {
+		testLine := currentLine + " " + word
+		textW, _ = text.Measure(testLine, face, 3)
+		if int(textW) > maxWidth {
+			lines = append(lines, currentLine)
+			currentLine = word
+		} else {
+			currentLine = testLine
+		}
+	}
+	lines = append(lines, currentLine)
+	return lines
+}
+
+func createTextImage(texto string, cor color.Color, fontsize float64) (*ebiten.Image, float64, float64) {
+	// Função auxiliar para criar e medir uma imagem de texto
+	face := &text.GoTextFace{
+		Source: font,
+		Size:   fontsize,
+	}
+	textSizeW, textSizeH := text.Measure(texto, face, 0)
+	textImage := ebiten.NewImage(int(textSizeW), int(textSizeH))
+
+	textOp := &text.DrawOptions{}
+	textOp.ColorScale.ScaleWithColor(cor)
+	text.Draw(textImage, texto, face, textOp)
+
+	return textImage, textSizeW, textSizeH
+}
+
+func newTextImage(texto string, cor color.Color, fontsize float64) (*ebiten.Image, float64, float64) {
+	// Determina o tamanho da fonte se não for especificado
+	if fontsize <= 0 {
+		fontsize = screenWidth / 60 // 25.6 em uma tela 1280x720
+	}
+	return createTextImage(texto, cor, fontsize)
+}
+
+// Cria uma imagem de texto quebrada em várias linhas, ainda não considera altura maxima
+func newTextImageMultiline(texto string, cor color.Color, fontsize float64, maxWidth int) *ebiten.Image {
+	face := &text.GoTextFace{
+		Source: font,
+		Size:   fontsize,
+	}
+	textSizeW, textSizeH := text.Measure(texto, face, 0)
+	if int(textSizeW) <= maxWidth {
+		textImage, _, _ := createTextImage(texto, cor, fontsize)
+		return textImage
+	} else {
+		lines := breakTextIntoLines(texto, fontsize, maxWidth)
+		hSizeOfLines := len(lines) * int(textSizeH)
+		textOp := &text.DrawOptions{}
+		textOp.ColorScale.ScaleWithColor(cor)
+		textImage := ebiten.NewImage(int(textSizeW), hSizeOfLines)
+
+		for i, line := range lines {
+			lineY := float64(i) * textSizeH
+			textOp.GeoM.Reset()
+			textOp.GeoM.Translate(0, lineY)
+			text.Draw(textImage, line, face, textOp)
+		}
+		return textImage
+	}
 }
 
 type Button struct {
-	x, y, w, h    int
-	image         *ebiten.Image
-	function      func() error
-	alreadClicked bool
+	x, y, w, h     int
+	image          *ebiten.Image
+	function       func() error
+	alreadyClicked bool
 }
 
 func newButton(x, y int, texto string, function func() error) *Button {
@@ -40,11 +116,12 @@ func newButton(x, y int, texto string, function func() error) *Button {
 
 func (b *Button) checkClicked(m *Mouse) error {
 	if m.X > b.x && m.X < b.x+b.w && m.Y > b.y && m.Y < b.y+b.h && m.LeftPressed {
-		b.alreadClicked = true
-		fmt.Println("Button clicked")
+		b.alreadyClicked = true
 		return b.function()
+	} else {
+		return nil
 	}
-	return nil
+
 }
 
 func (b *Button) draw(screen *ebiten.Image) {

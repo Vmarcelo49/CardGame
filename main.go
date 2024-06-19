@@ -119,7 +119,7 @@ func (g *Game) Update() error {
 			g.mainMenuButtons, _ = g.createButtons()
 		}
 		for _, b := range g.mainMenuButtons {
-			if !b.alreadClicked {
+			if !b.alreadyClicked {
 				exit = b.checkClicked(g.mouse)
 			}
 		}

@@ -71,10 +71,5 @@ func (g *Game) logic() {
 		g.deselectOrMoveCard()
 	}
 
-	// Who goes first
-	// will be implemented later
-
-	// if 0, its beginning of the game, decide who goes first, then draw cards
-
 	g.keyboardInput()
 }

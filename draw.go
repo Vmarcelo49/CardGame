@@ -32,7 +32,7 @@ func (g *Game) loadImages() {
 	for _, card := range g.duel.p1Hand.cards {
 		if _, ok := g.texMap[card.ID]; !ok {
 			fmt.Println("Carregando imagem de ID:", card.ID)
-			img, err := createCardImage(g.texMap[-1], card.Name, fmt.Sprint("Image/CardArt/", card.ID, ".png"))
+			img, err := createCardImage(g.texMap[-1], card.Name, card.Text, fmt.Sprint("Image/CardArt/", card.ID, ".png"))
 			if err != nil {
 				log.Panic(err)
 			}
@@ -42,7 +42,7 @@ func (g *Game) loadImages() {
 	// TODO: arrumar isso pros dois players
 	for _, card := range g.duel.field.player1Field {
 		if _, ok := g.texMap[card.ID]; !ok {
-			img, err := createCardImage(g.texMap[0], card.Name, fmt.Sprint("Image/CardArt/", card.ID, ".png"))
+			img, err := createCardImage(g.texMap[0], card.Name, card.Text, fmt.Sprint("Image/CardArt/", card.ID, ".png"))
 			if err != nil {
 				log.Panic(err)
 			}

@@ -1,3 +1,5 @@
+Fazer um texto temporario aparecer na tela
+
 Fazer HUD
 
 Fazer base da logica do jogo
