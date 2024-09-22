@@ -1,75 +1,62 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"log"
 )
 
-var (
-	SelectedCardIndex = -1
-)
+func (g *Game) updateSelectCard() {
+	var selectedCard *Card
 
-// Envia carta apartir do index para o slice de destino, removendo a carta do slice de origem.
-func sendCardTo(destination []*Card, source []*Card, index int) ([]*Card, []*Card, error) {
-	if len(source) == 0 {
-		return destination, source, errors.New("error: Source is empty, unable to send card")
-	}
-	if index < 0 || index >= len(source) {
-		return destination, source, errors.New("error: Index out of bounds, unable to send card")
+	for _, card := range g.gamestate.P1.Hand {
+		if card.Selected {
+			selectedCard = card
+			break
+		}
 	}
 
-	destination = append(destination, source[index])
-	source = append(source[:index], source[index+1:]...)
-	return destination, source, nil
-}
+	// Verifique se uma nova carta foi clicada
+	for _, card := range g.gamestate.P1.Hand {
+		if g.checkCardClicked(card) && g.mouse.LeftPressed {
+			if selectedCard == nil {
+				// Se nenhuma carta estiver selecionada, selecione esta
+				fmt.Println("Card selected:", card.Name)
+				card.Selected = true
+			} else if selectedCard != card {
+				// Se uma carta diferente estiver selecionada, deselecione a atual e selecione a nova
+				fmt.Println("Card deselected:", selectedCard.Name)
+				selectedCard.Selected = false
 
-// TODO: Fazer funcionar para os dois lados do campo
-func (g *Game) selectCard() {
-	for i, card := range g.duel.p1Hand.cards {
-		if card.in(g.mouse.X, g.mouse.Y) {
-			card.ScaleX = card.SelectedScaleX
-			card.ScaleY = card.SelectedScaleY
-			if g.mouse.LeftPressed {
-				card.Selected = true // Maybe not needed
-				SelectedCardIndex = i
-				fmt.Println("Card Selected")
-				break
+				fmt.Println("Card selected:", card.Name)
+				card.Selected = true
 			}
-		} else {
-			card.resetScale()
+			// Não faça nada se a mesma carta for clicada novamente
+			return
 		}
+	}
+
+	// Se o clique for em qualquer outro lugar (e não em uma carta), deselecione a carta atual
+	if g.mouse.LeftPressed && selectedCard != nil && !g.checkCardClicked(selectedCard) {
+		fmt.Println("Card deselected:", selectedCard.Name)
+		selectedCard.Selected = false
 	}
 }
 
-func (g *Game) deselectOrMoveCard() {
-	if g.mouse.LeftPressed {
-		if !g.duel.p1Hand.cards[SelectedCardIndex].in(g.mouse.X, g.mouse.Y) && g.mouse.Y > g.duel.p1Hand.coordY {
-			g.duel.p1Hand.cards[SelectedCardIndex].resetScale()
-			SelectedCardIndex = -1
-		}
-		if g.mouse.Y < g.duel.p1Hand.coordY {
-			var err error
-			g.duel.p1Hand.cards[SelectedCardIndex].resetScale()
-			g.duel.field.player1Field, g.duel.p1Hand.cards, err = sendCardTo(g.duel.field.player1Field, g.duel.p1Hand.cards, SelectedCardIndex)
-			if err != nil {
-				log.Println(err) // Probably should never return the error
-			}
+func (g *Game) updateGameLogic() {
+	// Verifica entradas de teclado (ex: tecla ESC para sair)
+	g.checkInput()
 
-			//g.hand.cards[SelectedCardIndex].moveTo(screenWidth/2, int(g.field.middlescreen)) // will be replaced
+	// Verifica se o mouse foi clicado em alguma carta
+	g.updateSelectCard()
 
-			SelectedCardIndex = -1
-		}
+	// Atualiza o estado do jogo
+	g.gamestate.update()
+
+	// Atualiza o conteúdo visível se houver mudança no estado do jogo
+	if g.previousGamestate != nil && !g.gamestate.equals(g.previousGamestate) {
+		log.Println(" Gamestate changed")
+		g.updateDuelRenderer()
 	}
-}
-
-func (g *Game) logic() {
-	if SelectedCardIndex == -1 {
-		g.selectCard()
-	}
-	if SelectedCardIndex != -1 {
-		g.deselectOrMoveCard()
-	}
-
-	g.keyboardInput()
+	// Salva o estado atual do jogo
+	g.previousGamestate = copyGamestate(g.gamestate)
 }

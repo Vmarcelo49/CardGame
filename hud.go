@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/text/v2"
 )
 
@@ -55,14 +54,6 @@ func createTextImage(texto string, cor color.Color, fontsize float64) (*ebiten.I
 	return textImage, textSizeW, textSizeH
 }
 
-func newTextImage(texto string, cor color.Color, fontsize float64) (*ebiten.Image, float64, float64) {
-	// Determina o tamanho da fonte se não for especificado
-	if fontsize <= 0 {
-		fontsize = screenWidth / 60 // 25.6 em uma tela 1280x720
-	}
-	return createTextImage(texto, cor, fontsize)
-}
-
 // Cria uma imagem de texto quebrada em várias linhas, ainda não considera altura maxima
 func newTextImageMultiline(texto string, cor color.Color, fontsize float64, maxWidth int) *ebiten.Image {
 	face := &text.GoTextFace{
@@ -90,28 +81,30 @@ func newTextImageMultiline(texto string, cor color.Color, fontsize float64, maxW
 	}
 }
 
+type Label struct {
+	x, y  int
+	text  string
+	image *ebiten.Image
+}
+
+func newLabel(text string) *Label {
+	x := (screenWidth - 200) / 2
+	y := (screenHeight - 20) / 2
+
+	return &Label{x, y, text, newTextImageMultiline(text, color.White, 20, 200)}
+}
+
+func (l *Label) draw(screen *ebiten.Image) {
+	op := &ebiten.DrawImageOptions{}
+	op.GeoM.Translate(float64(l.x), float64(l.y))
+	screen.DrawImage(l.image, op)
+}
+
 type Button struct {
 	x, y, w, h     int
 	image          *ebiten.Image
 	function       func() error
 	alreadyClicked bool
-}
-
-func newButton(x, y int, texto string, function func() error) *Button {
-	newImage := ebiten.NewImage(screenWidth/8, screenHeight/8)
-	newImage.Fill(color.White)
-
-	// draw text on the image
-	textOp := &text.DrawOptions{}
-	textOp.GeoM.Translate(10, 10)
-	textOp.ColorScale.ScaleWithColor(color.Black)
-
-	text.Draw(newImage, texto, &text.GoTextFace{
-		Source: font,
-		Size:   20.0,
-	}, textOp)
-
-	return &Button{x, y, screenWidth / 8, screenHeight / 8, newImage, function, false}
 }
 
 func (b *Button) checkClicked(m *Mouse) error {
@@ -130,40 +123,48 @@ func (b *Button) draw(screen *ebiten.Image) {
 	screen.DrawImage(b.image, op)
 }
 
-func addButton(buttonSlice []*Button, text string, function func() error) []*Button {
-	buttonX := screenWidth / 8
-	buttonY := screenHeight / 8
-	x := (screenWidth - buttonX) / 2
-	y := (screenHeight-buttonY)/2 + len(buttonSlice)*(buttonY+10)
-	buttonSlice = append(buttonSlice, newButton(x, y, text, function))
+func newButton(buttonSlice []*Button, innerText string, function func() error) []*Button {
+	buttonW := screenWidth / 8
+	buttonH := screenHeight / 8
+	x := (screenWidth - buttonW) / 2
+	y := (screenHeight-buttonH)/2 + len(buttonSlice)*(buttonH+10)
+
+	newImage := ebiten.NewImage(buttonW, buttonH)
+	newImage.Fill(color.White)
+
+	// draw text on the image
+	textOp := &text.DrawOptions{}
+	textOp.GeoM.Translate(10, 10) // pequena margem
+	textOp.ColorScale.ScaleWithColor(color.Black)
+
+	text.Draw(newImage, innerText, &text.GoTextFace{
+		Source: font,
+		Size:   20.0,
+	}, textOp)
+
+	button := &Button{x, y, screenWidth / 8, screenHeight / 8, newImage, function, false}
+
+	buttonSlice = append(buttonSlice, button)
 	return buttonSlice
 }
 
-// Cria os botões do menu principal
-func (g *Game) createButtons() ([]*Button, error) {
+// Cria os botões do menu principal.
+func (g *Game) newButtons() []*Button {
 	var buttons []*Button
-	buttons = addButton(buttons, "Duel", func() error {
+	buttons = newButton(buttons, "Duel", func() error {
 		g.loadDuelMode()
-		g.mainMenuButtons = nil // Go doesn clear the buttons, so we need to do it manually
+		g.loadDuelRenderer()
+		g.mainMenuButtons = nil // Seems like this doesnt unload by itself when its not used
 
 		return nil
 	})
-	buttons = addButton(buttons, "Deck Editor", func() error {
+	buttons = newButton(buttons, "Deck Editor", func() error {
 		fmt.Println("Soon...")
 		return nil
 	})
-	buttons = addButton(buttons, "Exit", func() error {
+	buttons = newButton(buttons, "Exit", func() error {
 		return ebiten.Termination
 	})
 
-	return buttons, nil
-
-}
-
-func (g *Game) DrawMainMenu(screen *ebiten.Image) {
-	screen.Fill(backgroundColor)
-	ebitenutil.DebugPrint(screen, "Main Menu")
-	for _, b := range g.mainMenuButtons {
-		b.draw(screen)
-	}
+	return buttons
 }

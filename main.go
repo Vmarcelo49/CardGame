@@ -1,19 +1,21 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
 	"image/color"
 	"log"
-	"os"
+	"runtime"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/text/v2"
+
+	_ "github.com/silbinarywolf/preferdiscretegpu" // This is needed for Windows to prefer the discrete GPU
 )
 
 var (
 	backgroundColor = color.RGBA{R: 31, G: 31, B: 31, A: 255}
 	font            *text.GoTextFaceSource
+	exitFlag        error
 )
 
 const (
@@ -28,99 +30,52 @@ const (
 type Scene uint8
 
 type Game struct {
+	keyStates map[ebiten.Key]bool
 	//Main Menu
-	scene           Scene
+	currentScene    Scene
 	mainMenuButtons []*Button
 	mouse           *Mouse
 	//Duel
-	duel        *Duel
-	exitingDuel bool
-	texMap      map[int]*ebiten.Image
-}
-
-func init() {
-	fontBytes, err := os.ReadFile("Font/Ubuntu-Regular.ttf")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	s, err := text.NewGoTextFaceSource(bytes.NewReader(fontBytes))
-	if err != nil {
-		log.Fatal(err)
-	}
-	font = s
-	scalingFactor = getScalingFactor(screenWidth, screenHeight)
-
-}
-
-func getScalingFactor(currentWidth, currentHeight int) float64 {
-	baseWidth, baseHeight := 1280, 720
-	baseScalingFactor := 0.1
-
-	// Calculate the scaling factor based on the current resolution
-	widthRatio := float64(currentWidth) / float64(baseWidth)
-	heightRatio := float64(currentHeight) / float64(baseHeight)
-
-	// Use the smaller ratio to ensure the scaled image fits both dimensions
-	if widthRatio < heightRatio {
-		return baseScalingFactor * widthRatio
-	} else {
-		return baseScalingFactor * heightRatio
-	}
-}
-
-func newGame() *Game {
-	back, err := createImageFromPath("Image/CardFrame/CardBackside.png")
-	if err != nil {
-		log.Panic(err)
-	}
-	frame, err := createImageFromPath("Image/CardFrame/CardFrame.png")
-	if err != nil {
-		log.Panic(err)
-	}
-	texMap := make(map[int]*ebiten.Image)
-	texMap[-1] = frame
-	texMap[0] = back
-	return &Game{
-		mouse:  &Mouse{},
-		scene:  MainMenu,
-		texMap: texMap,
-	}
-
+	duelRenderer      *DuelRenderer
+	gamestate         *Gamestate
+	previousGamestate *Gamestate
+	exitingDuel       bool
+	//label        *Label
 }
 
 func (g *Game) loadDuelMode() {
-	g.duel = g.newDuel()
-	g.scene = DuelScene
-}
+	g.currentScene = DuelScene
+	var err error
 
-func (g *Game) loadMainMenu() {
-	g.exitingDuel = true
-	g.scene = MainMenu
-	g.freeImages()
-	g.duel = nil
+	deck := "./deck/testDeck.txt"
+	g.gamestate, err = newGameState(deck, deck)
+	if err != nil {
+		log.Panic("erro criando gamestate: ", err)
+	}
+
+	//g.label = newLabel(labelText) //Todo fazer algo melhor em vez de só uma variavel com label
 
 }
 
 func (g *Game) Update() error {
 	g.mouse.UpdateMouseState()
-	var exit error
-	switch g.scene {
+
+	switch g.currentScene {
 	case DuelScene:
-		g.logic()
-		if !g.exitingDuel {
-			g.loadImages()
-		}
+		g.updateGameLogic()
 	case MainMenu:
 		if g.exitingDuel {
+			g.freeImages()
+			g.duelRenderer = nil
+			runtime.GC()
 			g.exitingDuel = false
 		}
-		if g.mainMenuButtons == nil { // gostei dessa abordagem
-			g.mainMenuButtons, _ = g.createButtons()
+		if g.mainMenuButtons == nil {
+			g.mainMenuButtons = g.newButtons()
 		}
 		for _, b := range g.mainMenuButtons {
-			if !b.alreadyClicked {
-				exit = b.checkClicked(g.mouse)
+			if !b.alreadyClicked { // evita chamar a função de criar o duelo mais de uma vez.
+				exitFlag = b.checkClicked(g.mouse)
 			}
 		}
 
@@ -130,42 +85,17 @@ func (g *Game) Update() error {
 
 	// Can return the error to end the game.
 
-	return exit
-}
-
-func (g *Game) DrawDuel(screen *ebiten.Image) {
-	screen.Fill(backgroundColor)
-
-	g.duel.p1Deck.draw(screen, g.texMap[0])
-	g.duel.p2Deck.draw(screen, g.texMap[0])
-
-	for _, card := range g.duel.p1Hand.cards {
-		if g.texMap[card.ID] == nil {
-			log.Panic(fmt.Sprintln("Card ID: ", card.ID, " is nil"))
-			card.draw(screen, g.texMap[0])
-		}
-		card.draw(screen, g.texMap[card.ID])
-	}
-	for i := range g.duel.p2Hand.cards {
-		op := &ebiten.DrawImageOptions{}
-		op.GeoM.Translate(float64(g.duel.p2Hand.cards[i].X), float64(g.duel.p2Hand.cards[i].Y))
-
-		screen.DrawImage(g.texMap[0], op)
-
-	}
-	g.duel.field.draw(screen, g.texMap)
-	// g.duel.p1GY.draw(screen, lastCardSentToP1GY.ID, g.texMap)
-
+	return exitFlag
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
-	switch g.scene {
+	switch g.currentScene {
 	case DuelScene:
 		g.DrawDuel(screen)
 	case MainMenu:
 		g.DrawMainMenu(screen)
 	case RockPaperScissors:
-		fmt.Println("RockPaperScissors")
+		fmt.Println("It will be done someday...")
 	}
 
 }
@@ -174,12 +104,24 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 	return screenWidth, screenHeight
 }
 
+func newGame() *Game {
+	game := &Game{}
+	game.mouse = &Mouse{}
+	game.currentScene = MainMenu
+	game.keyStates = make(map[ebiten.Key]bool)
+
+	return game
+}
+
+func init() {
+	loadFont()
+}
+
 func main() {
 	ebiten.SetWindowSize(screenWidth, screenHeight)
 	ebiten.SetWindowTitle("MyGame")
-	game := newGame()
 
-	if err := ebiten.RunGame(game); err != nil {
+	if err := ebiten.RunGame(newGame()); err != nil {
 		log.Fatal(err)
 	}
 }

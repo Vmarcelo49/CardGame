@@ -1,4 +1,9 @@
+Re Organizar tudo 
+em processo
+
 Fazer um texto temporario aparecer na tela
+-> colocar a imagem do texto no texMap
+-> fazer um obj que tem uma duração para aparecer na tela
 
 Fazer HUD
 

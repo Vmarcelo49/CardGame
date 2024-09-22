@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -18,12 +20,29 @@ func (m *Mouse) UpdateMouseState() {
 	m.MiddlePressed = ebiten.IsMouseButtonPressed(ebiten.MouseButtonMiddle)
 }
 
-func (g *Game) keyboardInput() error {
-	if ebiten.IsKeyPressed(ebiten.KeySpace) {
-		g.duel.p1Deck.drawCard(g.duel.p1Hand)
-	}
-	if ebiten.IsKeyPressed(ebiten.KeyEscape) {
-		g.loadMainMenu()
-	}
+func (g *Game) checkInput() error {
+	g.checkKey(ebiten.KeySpace, func() {
+		drawCard(g.gamestate, "player", 1)
+	})
+	g.checkKey(ebiten.KeyQ, func() {
+		drawCard(g.gamestate, "opp", 1)
+		fmt.Println(len(g.gamestate.P2.Hand))
+	})
+
+	g.checkKey(ebiten.KeyEscape, func() {
+		g.exitingDuel = true
+		g.currentScene = MainMenu
+	})
 	return nil
+}
+
+func (g *Game) checkKey(key ebiten.Key, action func()) {
+	if ebiten.IsKeyPressed(key) {
+		if !g.keyStates[key] {
+			action() // Executa o comando uma vez
+		}
+		g.keyStates[key] = true
+	} else {
+		g.keyStates[key] = false
+	}
 }
