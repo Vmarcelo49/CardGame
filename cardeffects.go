@@ -41,7 +41,7 @@ const (
 	cannotBeUsed        cardFlags = 0         // 0000 0000
 	canBeNormalSummoned cardFlags = 1 << iota // 0000 0001
 	canBeUsedSpeed1                           // 0000 0010
-	canBeUsedSpeed2                           // 0000 0100
+	canBeUsedSpeed2                           // 0000 0011
 )
 
 func inflictDamage(args ...interface{}) error {
@@ -51,7 +51,7 @@ func inflictDamage(args ...interface{}) error {
 
 	amount, ok1 := args[0].(int)
 	target, ok2 := args[1].(*Card)
-	//target, ok2 := args[1].(*playerhp)
+
 	if !ok1 || !ok2 {
 		return fmt.Errorf("invalid argument types")
 	}
@@ -73,4 +73,13 @@ func drawCard(gamestate *Gamestate, target string, amount uint) {
 
 	}
 
+}
+
+func (c *Card) getItself(gamestate *Gamestate) bool {
+	for _, card := range gamestate.P1.Hand { // gamestate.P1.Hand é um slice de ponteiros para cartas
+		if card == c {
+			return true
+		}
+	}
+	return false
 }

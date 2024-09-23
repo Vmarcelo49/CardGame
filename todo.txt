@@ -1,10 +1,21 @@
-Re Organizar tudo 
-em processo
-
-Fazer um texto temporario aparecer na tela
--> colocar a imagem do texto no texMap
--> fazer um obj que tem uma duração para aparecer na tela
+Fazer um processo simples de funções para as cartas.
+- Clicar numa carta cria um botão acima dela, o botão tem a função de mover a carta para o campo
 
 Fazer HUD
+Exibir as informações na tela de duelo:
+- Vida dos jogadores -> Lado esquerdo, acima e abaixo da divisória de campos
+- Contador de turno -> acima do botão de passar o turno, somente o numero
+- Algo para exibir de quem é o turno e acão possivel ?
+- Botão para mudar -> de fase/passar de turno 75x75 ou 100x100, no lado direito, acima da divisória dos campos
 
 Fazer base da logica do jogo
+
+Fazer virar um jogo:
+- invocar um monstro da mão
+- ser restringido de atacar no primeiro turno
+- passar o turno
+- oponente passar o turno de volta
+- atacar e causar dano
+- loop verificar se a condição de vitória foi alcançada
+- exibir tela de derrota/vitória
+- repetir isso com o outro jogador

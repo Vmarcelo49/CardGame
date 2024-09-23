@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"fmt"
 	"image"
+	"image/color"
 	"log"
 	"os"
 	"strconv"
@@ -84,4 +85,36 @@ func getCardIDs(filename string) ([]int, error) {
 	}
 
 	return cardIDs, nil
+}
+
+func (g *Game) loadDuelMode() {
+	g.currentScene = DuelScene
+	var err error
+
+	deck := "./deck/testDeck.txt"
+	g.gamestate, err = newGameState(deck, deck)
+	if err != nil {
+		log.Panic("erro criando gamestate: ", err)
+	}
+
+	g.otherImgs = make([]*Label, 0)
+
+	g.otherImgs = append(g.otherImgs, newTextLabel("Selected Card", 5000, 5000))
+
+	player1HPImg := ebiten.NewImage(100, 50)
+	player1HPImg.DrawImage(newTextImageMultiline("P1: 100", color.White, 20, 100), &ebiten.DrawImageOptions{})
+	g.otherImgs = append(g.otherImgs, &Label{5, screenHeight/2 + 5, player1HPImg, 0})
+
+	player2HPImg := ebiten.NewImage(100, 50)
+	player2HPImg.DrawImage(newTextImageMultiline("P2: 100", color.White, 20, 150), &ebiten.DrawImageOptions{})
+	g.otherImgs = append(g.otherImgs, &Label{5, screenHeight/2 - 25, player2HPImg, 0})
+
+	turnButtonImg := ebiten.NewImage(75, 75)
+	turnButtonImg.Fill(color.RGBA{0, 255, 0, 255})
+	g.otherImgs = append(g.otherImgs, &Label{screenWidth - 15 - 75, screenHeight/2 - (75 / 2), turnButtonImg, 0})
+
+	turnCountImg := ebiten.NewImage(100, 50)
+	turnCountImg.DrawImage(newTextImageMultiline("Turn: 1", color.White, 20, 100), &ebiten.DrawImageOptions{})
+	g.otherImgs = append(g.otherImgs, &Label{screenWidth - 15 - 75, screenHeight/2 - (75 / 2) - 20, turnCountImg, 0})
+
 }

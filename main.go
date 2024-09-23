@@ -41,20 +41,7 @@ type Game struct {
 	previousGamestate *Gamestate
 	exitingDuel       bool
 	//label        *Label
-}
-
-func (g *Game) loadDuelMode() {
-	g.currentScene = DuelScene
-	var err error
-
-	deck := "./deck/testDeck.txt"
-	g.gamestate, err = newGameState(deck, deck)
-	if err != nil {
-		log.Panic("erro criando gamestate: ", err)
-	}
-
-	//g.label = newLabel(labelText) //Todo fazer algo melhor em vez de só uma variavel com label
-
+	otherImgs []*Label
 }
 
 func (g *Game) Update() error {

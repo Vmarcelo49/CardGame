@@ -82,16 +82,17 @@ func newTextImageMultiline(texto string, cor color.Color, fontsize float64, maxW
 }
 
 type Label struct {
-	x, y  int
-	text  string
-	image *ebiten.Image
+	x, y     float64
+	image    *ebiten.Image
+	duration float64
 }
 
-func newLabel(text string) *Label {
-	x := (screenWidth - 200) / 2
-	y := (screenHeight - 20) / 2
-
-	return &Label{x, y, text, newTextImageMultiline(text, color.White, 20, 200)}
+func newTextLabel(text string, x, y float64) *Label {
+	labelImage := ebiten.NewImage(145, 30)
+	labelImage.Fill(color.White)
+	op := &ebiten.DrawImageOptions{}
+	labelImage.DrawImage(newTextImageMultiline(text, color.Black, 20, 200), op)
+	return &Label{x, y, labelImage, 0}
 }
 
 func (l *Label) draw(screen *ebiten.Image) {

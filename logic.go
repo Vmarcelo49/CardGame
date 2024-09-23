@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"time"
 )
 
 func (g *Game) updateSelectCard() {
@@ -22,6 +23,12 @@ func (g *Game) updateSelectCard() {
 				// Se nenhuma carta estiver selecionada, selecione esta
 				fmt.Println("Card selected:", card.Name)
 				card.Selected = true
+				g.otherImgs[0].x = float64(card.X)
+				g.otherImgs[0].y = float64(card.Y) - 31
+				time.AfterFunc(2*time.Second, func() {
+					card.Selected = false
+					g.otherImgs[0].x = 5000
+				})
 			} else if selectedCard != card {
 				// Se uma carta diferente estiver selecionada, deselecione a atual e selecione a nova
 				fmt.Println("Card deselected:", selectedCard.Name)
@@ -29,6 +36,12 @@ func (g *Game) updateSelectCard() {
 
 				fmt.Println("Card selected:", card.Name)
 				card.Selected = true
+				g.otherImgs[0].x = float64(card.X)
+				g.otherImgs[0].y = float64(card.Y) - 31
+				time.AfterFunc(2*time.Second, func() {
+					card.Selected = false
+					g.otherImgs[0].x = 5000
+				})
 			}
 			// Não faça nada se a mesma carta for clicada novamente
 			return
@@ -39,6 +52,7 @@ func (g *Game) updateSelectCard() {
 	if g.mouse.LeftPressed && selectedCard != nil && !g.checkCardClicked(selectedCard) {
 		fmt.Println("Card deselected:", selectedCard.Name)
 		selectedCard.Selected = false
+		g.otherImgs[0].x = 5000
 	}
 }
 

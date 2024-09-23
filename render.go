@@ -231,6 +231,9 @@ func (g *Game) DrawDuel(screen *ebiten.Image) {
 		screen.DrawImage(g.duelRenderer.cardImgMap[0], op) // facedown
 
 	}
+	for _, im := range g.otherImgs {
+		im.draw(screen)
+	}
 
 }
 
