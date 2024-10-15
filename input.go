@@ -21,6 +21,11 @@ func (m *Mouse) UpdateMouseState() {
 }
 
 func (g *Game) checkInput() error {
+	for _, button := range g.duelButtons {
+		if err := button.checkClicked(g.mouse); err != nil {
+			return err
+		}
+	}
 	g.checkKey(ebiten.KeySpace, func() {
 		drawCard(g.gamestate, "player", 1)
 	})

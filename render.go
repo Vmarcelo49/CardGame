@@ -157,12 +157,6 @@ func (g *Game) updateCardLocations() {
 	}
 }
 
-func (g *Game) updateDuelRenderer() {
-	g.updateVisibleCards()
-	g.updateCardLocations()
-
-}
-
 func (g *Game) freeImages() {
 	for key := range g.duelRenderer.cardImgMap {
 		// frame e facedown não são imagens de cartas, então não precisam ser deletadas
@@ -231,8 +225,20 @@ func (g *Game) DrawDuel(screen *ebiten.Image) {
 		screen.DrawImage(g.duelRenderer.cardImgMap[0], op) // facedown
 
 	}
+
+	// UI
+
 	for _, im := range g.otherImgs {
-		im.draw(screen)
+		// if x and y are inside the screen, draw the image
+		if im.x > 0 && im.y > 0 {
+			im.draw(screen)
+		}
+	}
+	for _, b := range g.duelButtons {
+		// if x and y are inside the screen, draw the button
+		if b.x > 0 && b.y > 0 {
+			b.draw(screen)
+		}
 	}
 
 }
@@ -243,4 +249,11 @@ func (g *Game) DrawMainMenu(screen *ebiten.Image) {
 	for _, b := range g.mainMenuButtons {
 		b.draw(screen)
 	}
+}
+
+func (g *Game) updateDuelRenderer() {
+	g.updateVisibleCards()
+	g.updateCardLocations()
+	//g.updateUi()
+
 }

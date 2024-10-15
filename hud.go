@@ -124,13 +124,8 @@ func (b *Button) draw(screen *ebiten.Image) {
 	screen.DrawImage(b.image, op)
 }
 
-func newButton(buttonSlice []*Button, innerText string, function func() error) []*Button {
-	buttonW := screenWidth / 8
-	buttonH := screenHeight / 8
-	x := (screenWidth - buttonW) / 2
-	y := (screenHeight-buttonH)/2 + len(buttonSlice)*(buttonH+10)
-
-	newImage := ebiten.NewImage(buttonW, buttonH)
+func newButton(w, h, x, y int, innerText string, function func() error) *Button {
+	newImage := ebiten.NewImage(w, h)
 	newImage.Fill(color.White)
 
 	// draw text on the image
@@ -140,32 +135,30 @@ func newButton(buttonSlice []*Button, innerText string, function func() error) [
 
 	text.Draw(newImage, innerText, &text.GoTextFace{
 		Source: font,
-		Size:   20.0,
+		Size:   15.0,
 	}, textOp)
 
-	button := &Button{x, y, screenWidth / 8, screenHeight / 8, newImage, function, false}
-
-	buttonSlice = append(buttonSlice, button)
-	return buttonSlice
+	return &Button{x, y, w, h, newImage, function, false}
 }
 
 // Cria os botões do menu principal.
-func (g *Game) newButtons() []*Button {
-	var buttons []*Button
-	buttons = newButton(buttons, "Duel", func() error {
-		g.loadDuelMode()
-		g.loadDuelRenderer()
-		g.mainMenuButtons = nil // Seems like this doesnt unload by itself when its not used
+func (g *Game) newMainMenuButtons() []*Button {
+	buttonW := screenWidth / 8
+	buttonH := screenHeight / 8
+	x := (screenWidth - buttonW) / 2
 
+	buttonDuel := newButton(buttonW, buttonH, x, screenHeight/2, "Duel", func() error {
+		g.loadDuelMode()
+		g.mainMenuButtons = nil // reset buttons, avoid being clicked again in other scenes
 		return nil
 	})
-	buttons = newButton(buttons, "Deck Editor", func() error {
+	buttonDeckEditor := newButton(buttonW, buttonH, x, screenHeight/2+buttonH+10, "Deck Editor", func() error {
 		fmt.Println("Soon...")
 		return nil
 	})
-	buttons = newButton(buttons, "Exit", func() error {
+	buttonExit := newButton(buttonW, buttonH, x, screenHeight/2+buttonH*2+20, "Exit", func() error {
 		return ebiten.Termination
 	})
 
-	return buttons
+	return []*Button{buttonDuel, buttonDeckEditor, buttonExit}
 }

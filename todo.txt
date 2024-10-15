@@ -1,5 +1,7 @@
 Fazer um processo simples de funções para as cartas.
 - Clicar numa carta cria um botão acima dela, o botão tem a função de mover a carta para o campo
+- Fazer funções separadas para botões do menu e botões do jogo
+- Fazer os Labels virarem botões com funções simples
 
 Fazer HUD
 Exibir as informações na tela de duelo:

@@ -41,7 +41,8 @@ type Game struct {
 	previousGamestate *Gamestate
 	exitingDuel       bool
 	//label        *Label
-	otherImgs []*Label
+	otherImgs   []*Label
+	duelButtons []*Button
 }
 
 func (g *Game) Update() error {
@@ -58,7 +59,7 @@ func (g *Game) Update() error {
 			g.exitingDuel = false
 		}
 		if g.mainMenuButtons == nil {
-			g.mainMenuButtons = g.newButtons()
+			g.mainMenuButtons = g.newMainMenuButtons()
 		}
 		for _, b := range g.mainMenuButtons {
 			if !b.alreadyClicked { // evita chamar a função de criar o duelo mais de uma vez.

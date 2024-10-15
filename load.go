@@ -89,6 +89,7 @@ func getCardIDs(filename string) ([]int, error) {
 
 func (g *Game) loadDuelMode() {
 	g.currentScene = DuelScene
+	g.loadDuelRenderer()
 	var err error
 
 	deck := "./deck/testDeck.txt"
@@ -97,9 +98,9 @@ func (g *Game) loadDuelMode() {
 		log.Panic("erro criando gamestate: ", err)
 	}
 
-	g.otherImgs = make([]*Label, 0)
+	// Hud Items
 
-	g.otherImgs = append(g.otherImgs, newTextLabel("Selected Card", 5000, 5000))
+	g.otherImgs = make([]*Label, 0)
 
 	player1HPImg := ebiten.NewImage(100, 50)
 	player1HPImg.DrawImage(newTextImageMultiline("P1: 100", color.White, 20, 100), &ebiten.DrawImageOptions{})
@@ -116,5 +117,11 @@ func (g *Game) loadDuelMode() {
 	turnCountImg := ebiten.NewImage(100, 50)
 	turnCountImg.DrawImage(newTextImageMultiline("Turn: 1", color.White, 20, 100), &ebiten.DrawImageOptions{})
 	g.otherImgs = append(g.otherImgs, &Label{screenWidth - 15 - 75, screenHeight/2 - (75 / 2) - 20, turnCountImg, 0})
+
+	ButtonNormalSummon := newButton(g.duelRenderer.cardSizeW, g.duelRenderer.cardSizeH/10, 5000, 5000, "Normal Summon", func() error { // remember to change the function
+		fmt.Println("Original button function called")
+		return nil
+	})
+	g.duelButtons = []*Button{ButtonNormalSummon}
 
 }

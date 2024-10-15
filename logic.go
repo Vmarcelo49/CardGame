@@ -3,8 +3,23 @@ package main
 import (
 	"fmt"
 	"log"
-	"time"
 )
+
+func (g *Game) updateButton(card *Card, button *Button) {
+	button.x = card.X
+	button.y = card.Y - button.h
+
+	// Atualiza a função do botão para usar o efeito da carta selecionada
+	button.function = func() error {
+		button.alreadyClicked = true
+		button.x = 5000
+		err := card.normalSummon(g.gamestate)
+		if err != nil {
+			return err
+		}
+		return nil
+	}
+}
 
 func (g *Game) updateSelectCard() {
 	var selectedCard *Card
@@ -23,12 +38,8 @@ func (g *Game) updateSelectCard() {
 				// Se nenhuma carta estiver selecionada, selecione esta
 				fmt.Println("Card selected:", card.Name)
 				card.Selected = true
-				g.otherImgs[0].x = float64(card.X)
-				g.otherImgs[0].y = float64(card.Y) - 31
-				time.AfterFunc(2*time.Second, func() {
-					card.Selected = false
-					g.otherImgs[0].x = 5000
-				})
+				g.updateButton(card, g.duelButtons[0])
+
 			} else if selectedCard != card {
 				// Se uma carta diferente estiver selecionada, deselecione a atual e selecione a nova
 				fmt.Println("Card deselected:", selectedCard.Name)
@@ -36,14 +47,8 @@ func (g *Game) updateSelectCard() {
 
 				fmt.Println("Card selected:", card.Name)
 				card.Selected = true
-				g.otherImgs[0].x = float64(card.X)
-				g.otherImgs[0].y = float64(card.Y) - 31
-				time.AfterFunc(2*time.Second, func() {
-					card.Selected = false
-					g.otherImgs[0].x = 5000
-				})
+
 			}
-			// Não faça nada se a mesma carta for clicada novamente
 			return
 		}
 	}
@@ -52,13 +57,16 @@ func (g *Game) updateSelectCard() {
 	if g.mouse.LeftPressed && selectedCard != nil && !g.checkCardClicked(selectedCard) {
 		fmt.Println("Card deselected:", selectedCard.Name)
 		selectedCard.Selected = false
-		g.otherImgs[0].x = 5000
+
 	}
 }
 
 func (g *Game) updateGameLogic() {
-	// Verifica entradas de teclado (ex: tecla ESC para sair)
-	g.checkInput()
+	// Verifica entradas de teclado e cliques em botões da Hud
+	err := g.checkInput()
+	if err != nil {
+		log.Println(err)
+	}
 
 	// Verifica se o mouse foi clicado em alguma carta
 	g.updateSelectCard()

@@ -83,3 +83,27 @@ func (c *Card) getItself(gamestate *Gamestate) bool {
 	}
 	return false
 }
+
+func removeCard(hand []*Card, card *Card) []*Card {
+	for i, c := range hand {
+		if c == card {
+			return append(hand[:i], hand[i+1:]...)
+		}
+	}
+	return hand
+}
+
+func (c *Card) normalSummon(gamestate *Gamestate) error {
+	if c.CType != Creature {
+		return fmt.Errorf("Card is not a creature")
+	}
+	if c.Flags&canBeNormalSummoned == 0 {
+		return fmt.Errorf("Card cannot be normal summoned")
+	}
+
+	gamestate.Field.P1 = append(gamestate.Field.P1, c)
+	gamestate.P1.Hand = removeCard(gamestate.P1.Hand, c)
+
+	fmt.Println("Card normal summoned:", c.Name)
+	return nil
+}
