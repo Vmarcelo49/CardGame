@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"image/color"
 	"log"
-	"runtime"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/text/v2"
@@ -55,14 +54,13 @@ func (g *Game) Update() error {
 		if g.exitingDuel {
 			g.freeImages()
 			g.duelRenderer = nil
-			runtime.GC()
 			g.exitingDuel = false
 		}
 		if g.mainMenuButtons == nil {
 			g.mainMenuButtons = g.newMainMenuButtons()
 		}
 		for _, b := range g.mainMenuButtons {
-			if !b.alreadyClicked { // evita chamar a função de criar o duelo mais de uma vez.
+			if !b.alreadyClicked { // Avoid calling the function to create the duel more than once.
 				exitFlag = b.checkClicked(g.mouse)
 			}
 		}
@@ -102,7 +100,10 @@ func newGame() *Game {
 }
 
 func init() {
-	loadFont()
+	err := loadFont()
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func main() {

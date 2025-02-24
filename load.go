@@ -15,17 +15,18 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/text/v2"
 )
 
-func loadFont() {
+func loadFont() error {
 	fontBytes, err := os.ReadFile("assets/font/Ubuntu-Regular.ttf")
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	textFaceSource, err := text.NewGoTextFaceSource(bytes.NewReader(fontBytes))
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	font = textFaceSource
+	return nil
 }
 
 // Creates a new image from path
@@ -103,11 +104,11 @@ func (g *Game) loadDuelMode() {
 	g.otherImgs = make([]*Label, 0)
 
 	player1HPImg := ebiten.NewImage(100, 50)
-	player1HPImg.DrawImage(newTextImageMultiline("P1: 100", color.White, 20, 100), &ebiten.DrawImageOptions{})
+	player1HPImg.DrawImage(newTextImageMultiline("P1: 100", color.White, 20, 20, 125), &ebiten.DrawImageOptions{})
 	g.otherImgs = append(g.otherImgs, &Label{5, screenHeight/2 + 5, player1HPImg, 0})
 
 	player2HPImg := ebiten.NewImage(100, 50)
-	player2HPImg.DrawImage(newTextImageMultiline("P2: 100", color.White, 20, 150), &ebiten.DrawImageOptions{})
+	player2HPImg.DrawImage(newTextImageMultiline("P2: 100", color.White, 20, 20, 125), &ebiten.DrawImageOptions{})
 	g.otherImgs = append(g.otherImgs, &Label{5, screenHeight/2 - 25, player2HPImg, 0})
 
 	turnButtonImg := ebiten.NewImage(75, 75)
@@ -115,7 +116,7 @@ func (g *Game) loadDuelMode() {
 	g.otherImgs = append(g.otherImgs, &Label{screenWidth - 15 - 75, screenHeight/2 - (75 / 2), turnButtonImg, 0})
 
 	turnCountImg := ebiten.NewImage(100, 50)
-	turnCountImg.DrawImage(newTextImageMultiline("Turn: 1", color.White, 20, 100), &ebiten.DrawImageOptions{})
+	turnCountImg.DrawImage(newTextImageMultiline("Turn: 1", color.White, 20, 20, 125), &ebiten.DrawImageOptions{})
 	g.otherImgs = append(g.otherImgs, &Label{screenWidth - 15 - 75, screenHeight/2 - (75 / 2) - 20, turnCountImg, 0})
 
 	ButtonNormalSummon := newButton(g.duelRenderer.cardSizeW, g.duelRenderer.cardSizeH/10, 5000, 5000, "Normal Summon", func() error { // remember to change the function

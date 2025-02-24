@@ -15,6 +15,7 @@ var (
 	margemHorizontal = 50.0
 	margemVertical   = 250.0
 	fontSize         = 20.0 * 10 // fits 14 characters
+	maxTextHeight    = 125.0
 )
 
 //type Effect string
@@ -75,13 +76,13 @@ func createCardImage(cardFrameIm *ebiten.Image, card *Card) (*ebiten.Image, erro
 	// Draw no nome da carta
 	op.GeoM.Translate(border, border)
 	fontSize = float64(cardFrameIm.Bounds().Dx()) / 10 // this image is huge, so the font size is also huge
-	textImg := newTextImageMultiline(card.Name, color.White, fontSize, int(cardFrameIm.Bounds().Dx())-int(border))
+	textImg := newTextImageMultiline(card.Name, color.White, fontSize, int(cardFrameIm.Bounds().Dx())-int(border), int(maxTextHeight))
 	image.DrawImage(textImg, op)
 	op.GeoM.Reset()
 
 	// Draw no texto da carta
 	op.GeoM.Translate(border, float64(cardArt.Bounds().Dy()+int(margemVertical))+border)
-	effImg := newTextImageMultiline(card.Text, color.White, fontSize, int(cardFrameIm.Bounds().Dx())-int(border))
+	effImg := newTextImageMultiline(card.Text, color.White, fontSize, int(cardFrameIm.Bounds().Dx())-int(border), int(maxTextHeight))
 	image.DrawImage(effImg, op)
 	op.GeoM.Reset()
 

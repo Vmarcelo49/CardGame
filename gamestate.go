@@ -23,76 +23,15 @@ func (g *Gamestate) update() {
 
 // equals compares two gamestates, if they are different, it returns false
 func (gs *Gamestate) equals(other *Gamestate) bool {
-	// Comparar HP dos jogadores
-	if gs.P1.HP != other.P1.HP || gs.P2.HP != other.P2.HP {
+	if !gs.P1.equals(other.P1) || !gs.P2.equals(other.P2) {
 		return false
 	}
 
-	// Comparar Decks
-	if len(gs.P1.Deck) != len(other.P1.Deck) || len(gs.P2.Deck) != len(other.P2.Deck) {
+	if !gs.Field.equals(&other.Field) {
 		return false
-	}
-	for i := range gs.P1.Deck {
-		if gs.P1.Deck[i].ID != other.P1.Deck[i].ID {
-			return false
-		}
-	}
-	for i := range gs.P2.Deck {
-		if gs.P2.Deck[i].ID != other.P2.Deck[i].ID {
-			return false
-		}
 	}
 
-	// Comparar Mãos
-	if len(gs.P1.Hand) != len(other.P1.Hand) || len(gs.P2.Hand) != len(other.P2.Hand) {
-		return false
-	}
-	for i := range gs.P1.Hand {
-		if gs.P1.Hand[i].ID != other.P1.Hand[i].ID {
-			return false
-		}
-	}
-	for i := range gs.P2.Hand {
-		if gs.P2.Hand[i].ID != other.P2.Hand[i].ID {
-			return false
-		}
-	}
-
-	// Comparar Cemitérios
-	if len(gs.P1.GY) != len(other.P1.GY) || len(gs.P2.GY) != len(other.P2.GY) {
-		return false
-	}
-	for i := range gs.P1.GY {
-		if gs.P1.GY[i].ID != other.P1.GY[i].ID {
-			return false
-		}
-	}
-	for i := range gs.P2.GY {
-		if gs.P2.GY[i].ID != other.P2.GY[i].ID {
-			return false
-		}
-	}
-
-	// Comparar Campos
-	if len(gs.Field.P1) != len(other.Field.P1) || len(gs.Field.P2) != len(other.Field.P2) {
-		return false
-	}
-	for i := range gs.Field.P1 {
-		if gs.Field.P1[i].ID != other.Field.P1[i].ID {
-			return false
-		}
-	}
-	for i := range gs.Field.P2 {
-		if gs.Field.P2[i].ID != other.Field.P2[i].ID {
-			return false
-		}
-	}
-
-	// Comparar Turno
-	if gs.TurnCount != other.TurnCount {
-		return false
-	}
-	if gs.CurrentPlayerTurn != other.CurrentPlayerTurn {
+	if gs.TurnCount != other.TurnCount || gs.CurrentPlayerTurn != other.CurrentPlayerTurn {
 		return false
 	}
 
@@ -189,6 +128,16 @@ func (p *Player) drawCard() {
 	p.Deck = p.Deck[1:]
 }
 
+func (p *Player) equals(other *Player) bool {
+	if p.HP != other.HP {
+		return false
+	}
+	if !compareCardSlices(p.Deck, other.Deck) || !compareCardSlices(p.Hand, other.Hand) || !compareCardSlices(p.GY, other.GY) {
+		return false
+	}
+	return true
+}
+
 type Field struct {
 	P1, P2 []*Card
 }
@@ -199,4 +148,23 @@ func (f *Field) AllCards() []*Card {
 	all = append(all, f.P1...) // Adiciona todas as cartas de P1
 	all = append(all, f.P2...) // Adiciona todas as cartas de P2
 	return all
+}
+
+func (f *Field) equals(other *Field) bool {
+	if !compareCardSlices(f.P1, other.P1) || !compareCardSlices(f.P2, other.P2) {
+		return false
+	}
+	return true
+}
+
+func compareCardSlices(a, b []*Card) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for i := range a {
+		if a[i].ID != b[i].ID {
+			return false
+		}
+	}
+	return true
 }

@@ -26,25 +26,25 @@ func (g *Game) checkInput() error {
 			return err
 		}
 	}
-	g.checkKey(ebiten.KeySpace, func() {
+	g.handleKeyPress(ebiten.KeySpace, func() {
 		drawCard(g.gamestate, "player", 1)
 	})
-	g.checkKey(ebiten.KeyQ, func() {
+	g.handleKeyPress(ebiten.KeyQ, func() {
 		drawCard(g.gamestate, "opp", 1)
 		fmt.Println(len(g.gamestate.P2.Hand))
 	})
 
-	g.checkKey(ebiten.KeyEscape, func() {
+	g.handleKeyPress(ebiten.KeyEscape, func() {
 		g.exitingDuel = true
 		g.currentScene = MainMenu
 	})
 	return nil
 }
 
-func (g *Game) checkKey(key ebiten.Key, action func()) {
+func (g *Game) handleKeyPress(key ebiten.Key, action func()) {
 	if ebiten.IsKeyPressed(key) {
 		if !g.keyStates[key] {
-			action() // Executa o comando uma vez
+			action() // Execute the command once
 		}
 		g.keyStates[key] = true
 	} else {
