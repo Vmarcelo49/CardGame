@@ -6,13 +6,18 @@ import (
 	"fmt"
 	"image"
 	"image/color"
-	"log"
 	"os"
 	"strconv"
 	"strings"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/text/v2"
+)
+
+const (
+	playerHPWidth  = 100
+	playerHPHeight = 50
+	turnButtonSize = 75
 )
 
 func loadFont() error {
@@ -88,19 +93,27 @@ func getCardIDs(filename string) ([]int, error) {
 	return cardIDs, nil
 }
 
-func (g *Game) loadDuelMode() {
+func (g *Game) loadDuelMode() error {
 	g.currentScene = DuelScene
-	g.loadDuelRenderer()
-	var err error
-
-	deck := "./deck/testDeck.txt"
-	g.gamestate, err = newGameState(deck, deck)
-	if err != nil {
-		log.Panic("erro criando gamestate: ", err)
+	if err := g.loadDuelRenderer(); err != nil {
+		return fmt.Errorf("failed to load duel renderer: %w", err)
 	}
 
-	// Hud Items
+	deck := "./deck/testDeck.txt"
+	gameState, err := newGameState(deck, deck)
+	if err != nil {
+		return fmt.Errorf("failed to create game state: %w", err)
+	}
+	g.gamestate = gameState
 
+	if err := g.setupDuelUI(); err != nil {
+		return fmt.Errorf("failed to setup duel UI: %w", err)
+	}
+
+	return nil
+}
+
+func (g *Game) setupDuelUI() error {
 	g.otherImgs = make([]*Label, 0)
 
 	player1HPImg := ebiten.NewImage(100, 50)
@@ -111,18 +124,35 @@ func (g *Game) loadDuelMode() {
 	player2HPImg.DrawImage(newTextImageMultiline("P2: 100", color.White, 20, 20, 125), &ebiten.DrawImageOptions{})
 	g.otherImgs = append(g.otherImgs, &Label{5, screenHeight/2 - 25, player2HPImg, 0})
 
-	turnButtonImg := ebiten.NewImage(75, 75)
+	// Turn Button
+	turnButtonImg := ebiten.NewImage(turnButtonSize, turnButtonSize)
 	turnButtonImg.Fill(color.RGBA{0, 255, 0, 255})
-	g.otherImgs = append(g.otherImgs, &Label{screenWidth - 15 - 75, screenHeight/2 - (75 / 2), turnButtonImg, 0})
+	g.otherImgs = append(g.otherImgs, &Label{screenWidth - 15 - turnButtonSize, screenHeight/2 - (turnButtonSize / 2), turnButtonImg, 0})
 
 	turnCountImg := ebiten.NewImage(100, 50)
-	turnCountImg.DrawImage(newTextImageMultiline("Turn: 1", color.White, 20, 20, 125), &ebiten.DrawImageOptions{})
+	turnCountImg.DrawImage(newTextImageMultiline("Turn: 1", color.White, 20, 100), &ebiten.DrawImageOptions{})
 	g.otherImgs = append(g.otherImgs, &Label{screenWidth - 15 - 75, screenHeight/2 - (75 / 2) - 20, turnCountImg, 0})
 
-	ButtonNormalSummon := newButton(g.duelRenderer.cardSizeW, g.duelRenderer.cardSizeH/10, 5000, 5000, "Normal Summon", func() error { // remember to change the function
-		fmt.Println("Original button function called")
+	// Normal Summon Button
+	ButtonNormalSummon := newButton(g.duelRenderer.cardSizeW, g.duelRenderer.cardSizeH/10, 5000, 5000, "Normal Summon", func() error {
+		fmt.Println("Normal Summon button clicked")
 		return nil
 	})
 	g.duelButtons = []*Button{ButtonNormalSummon}
 
+	return nil
+}
+
+func (g *Game) createHPImage(text string, yPos int) (*Label, error) {
+	img := ebiten.NewImage(playerHPWidth, playerHPHeight)
+	textImg := newTextImageMultiline(text, color.White, 20, playerHPWidth)
+	img.DrawImage(textImg, &ebiten.DrawImageOptions{})
+	return &Label{5, yPos, img, 0}, nil
+}
+
+func (g *Game) createTextImage(text string, xPos, yPos int) (*Label, error) {
+	img := ebiten.NewImage(playerHPWidth, playerHPHeight)
+	textImg := newTextImageMultiline(text, color.White, 20, playerHPWidth)
+	img.DrawImage(textImg, &ebiten.DrawImageOptions{})
+	return &Label{xPos, yPos, img, 0}, nil
 }

@@ -61,6 +61,7 @@ func (g *Game) Update() error {
 		}
 		for _, b := range g.mainMenuButtons {
 			if !b.alreadyClicked { // Avoid calling the function to create the duel more than once.
+			if !b.alreadyClicked { // making sure that its not called twice
 				exitFlag = b.checkClicked(g.mouse)
 			}
 		}
@@ -108,7 +109,7 @@ func init() {
 
 func main() {
 	ebiten.SetWindowSize(screenWidth, screenHeight)
-	ebiten.SetWindowTitle("MyGame")
+	ebiten.SetWindowTitle("CardGame")
 
 	if err := ebiten.RunGame(newGame()); err != nil {
 		log.Fatal(err)

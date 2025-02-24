@@ -41,7 +41,7 @@ type Card struct {
 	CType    CardType
 	SubType  string
 	Text     string
-	Effect   func()
+	Effect   func() error
 	Stats    Stats //can be nil
 	Keywords Keyword
 	Flags    cardFlags
@@ -87,4 +87,59 @@ func createCardImage(cardFrameIm *ebiten.Image, card *Card) (*ebiten.Image, erro
 	op.GeoM.Reset()
 
 	return image, nil
+}
+
+func (c *Card)modifyHP(amount int){
+	originalValue := c.Stats.Life
+	c.Stats.Life += amount
+	fmt.Printf("Card HP value modified was %d, now is %d"originalValue,c.Stats.Life)
+}
+
+func (c *Card) getLocation(gs Gamestate) string {
+	// Check P1 locations
+	for _, card := range gs.P1.Hand {
+		if c == card {
+			return "P1HAND"
+		}
+	}
+	for _, card := range gs.P1.Deck {
+		if c == card {
+			return "P1DECK"
+		}
+	}
+	for _, card := range gs.P1.GY {
+		if c == card {
+			return "P1GY"
+		}
+	}
+	for _, card := range gs.Field.P1 {
+		if c == card {
+			return "P1FIELD"
+		}
+	}
+
+	// Check P2 locations
+	for _, card := range gs.P2.Hand {
+		if c == card {
+			return "P2HAND"
+		}
+	}
+	for _, card := range gs.P2.Deck {
+		if c == card {
+			return "P2DECK"
+		}
+	}
+	for _, card := range gs.P2.GY {
+		if c == card {
+			return "P2GY"
+		}
+	}
+	for _, card := range gs.Field.P2 {
+		if c == card {
+			return "P2FIELD"
+		}
+	}
+
+	// Default return if card is not found
+	return "UNKNOWN"
 }

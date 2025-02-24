@@ -160,30 +160,18 @@ func (g *Game) newMainMenuButtons() []*Button {
 	buttonH := screenHeight / 8
 	x := (screenWidth - buttonW) / 2
 
-	buttonConfigs := []struct {
-		label   string
-		yOffset int
-		onClick func() error
-	}{
-		{"Duel", 0, func() error {
-			g.loadDuelMode()
-			g.mainMenuButtons = nil // reset buttons, avoid being clicked again in other scenes
-			return nil
-		}},
-		{"Deck Editor", buttonH + 10, func() error {
-			fmt.Println("Soon...")
-			return nil
-		}},
-		{"Exit", buttonH*2 + 20, func() error {
-			return ebiten.Termination
-		}},
-	}
+	buttonDuel := newButton(buttonW, buttonH, x, screenHeight/2, "Duel", func() error {
+		g.loadDuelMode()
+		g.mainMenuButtons = nil // reset buttons, avoid being clicked again in other scenes
+		return nil
+	})
+	buttonDeckEditor := newButton(buttonW, buttonH, x, screenHeight/2+buttonH+10, "Deck Editor", func() error {
+		fmt.Println("Soon...")
+		return nil
+	})
+	buttonExit := newButton(buttonW, buttonH, x, screenHeight/2+buttonH*2+20, "Exit", func() error {
+		return ebiten.Termination
+	})
 
-	var buttons []*Button
-	for _, config := range buttonConfigs {
-		button := newButton(buttonW, buttonH, x, screenHeight/2+config.yOffset, config.label, config.onClick)
-		buttons = append(buttons, button)
-	}
-
-	return buttons
+	return []*Button{buttonDuel, buttonDeckEditor, buttonExit}
 }
