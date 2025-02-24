@@ -44,21 +44,49 @@ const (
 	canBeUsedSpeed2                           // 0000 0011
 )
 
+type Damageable interface {
+    modifyHP(amount int)
+}
+
 func inflictDamage(args ...interface{}) error {
 	if len(args) != 2 {
 		return fmt.Errorf("expected 2 arguments, got %d", len(args))
 	}
 
 	amount, ok1 := args[0].(int)
-	target, ok2 := args[1].(*Card)
-
-	if !ok1 || !ok2 {
-		return fmt.Errorf("invalid argument types")
+	if !ok1 {
+		return fmt.Errorf("first argument must be an int")
 	}
 
-	target.Stats.Life -= amount
-
+	switch target := args[1].(type) {
+	case *Card:
+		target.Stats.Life -= amount
+		fmt.Println("Damage inflicted on Card:", target.Stats.Life)
+	case *Player:
+		target.HP -= amount
+		fmt.Println("Damage inflicted on Player:", target.HP)
+	default:
+		return fmt.Errorf("invalid target type")
+	}
 	return nil
+}
+
+func inflictDamage2(amount int, target Damageable) {
+	target.modifyHP(-amount)
+}
+
+func tapinhaEff() error{
+	amount := 5
+	target,err := getTarget("player,card")
+	if err != nil{
+		return errors.New("Unable to get a target for a card effect")
+	}
+	return inflictDamage(amount,target)
+}
+
+func getTarget(strValues string) interface{}{
+	//split the str with ,
+	// check for each valid target and return a pointer to it
 }
 
 func drawCard(gamestate *Gamestate, target string, amount uint) {
@@ -76,7 +104,7 @@ func drawCard(gamestate *Gamestate, target string, amount uint) {
 }
 
 func (c *Card) getItself(gamestate *Gamestate) bool {
-	for _, card := range gamestate.P1.Hand { // gamestate.P1.Hand é um slice de ponteiros para cartas
+	for _, card := range gamestate.P1.Hand {
 		if card == c {
 			return true
 		}
@@ -84,21 +112,21 @@ func (c *Card) getItself(gamestate *Gamestate) bool {
 	return false
 }
 
-func removeCard(hand []*Card, card *Card) []*Card {
-	for i, c := range hand {
+func removeCard(place []*Card, card *Card) []*Card {
+	for i, c := range place {
 		if c == card {
-			return append(hand[:i], hand[i+1:]...)
+			return append(place[:i], place[i+1:]...)
 		}
 	}
-	return hand
+	return place
 }
 
 func (c *Card) normalSummon(gamestate *Gamestate) error {
 	if c.CType != Creature {
-		return fmt.Errorf("Card is not a creature")
+		return fmt.Errorf("This card is not a creature")
 	}
 	if c.Flags&canBeNormalSummoned == 0 {
-		return fmt.Errorf("Card cannot be normal summoned")
+		return fmt.Errorf("This card cannot be normal summoned")
 	}
 
 	gamestate.Field.P1 = append(gamestate.Field.P1, c)

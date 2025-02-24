@@ -180,6 +180,12 @@ type Player struct {
 	Deck []*Card
 }
 
+func (p *Player)modifyHP(amount int){
+	originalValue := p.HP
+	p.HP += amount
+	fmt.Printf("Player HP value modified was %d, now is %d"originalValue,p.HP)
+}
+
 func (p *Player) drawCard() {
 	if len(p.Deck) == 0 {
 		fmt.Println("Deck is empty")

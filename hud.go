@@ -149,7 +149,7 @@ func (g *Game) newMainMenuButtons() []*Button {
 
 	buttonDuel := newButton(buttonW, buttonH, x, screenHeight/2, "Duel", func() error {
 		g.loadDuelMode()
-		g.mainMenuButtons = nil // reset buttons, avoid being clicked again in other scenes
+		g.mainMenuButtons = nil // reset buttons, avoiding being clicked again in other scenes
 		return nil
 	})
 	buttonDeckEditor := newButton(buttonW, buttonH, x, screenHeight/2+buttonH+10, "Deck Editor", func() error {
