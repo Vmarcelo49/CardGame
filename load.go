@@ -109,11 +109,6 @@ func (g *Game) loadDuelMode() error {
 	if err := g.setupDuelUI(); err != nil {
 		return fmt.Errorf("failed to setup duel UI: %w", err)
 	}
-	effectButton := newButton(g.duelRenderer.cardSizeW, g.duelRenderer.cardSizeH/10, -5000, -5000, "Activate", func() error {
-		fmt.Println("Ativate button clicked")
-		return nil
-	})
-	g.duelButtons = append(g.duelButtons, effectButton)
 
 	return nil
 }
@@ -138,26 +133,20 @@ func (g *Game) setupDuelUI() error {
 	turnCountImg.DrawImage(newTextImageMultiline("Turn: 1", color.White, 20, 100, 50), &ebiten.DrawImageOptions{})
 	g.otherImgs = append(g.otherImgs, &Label{screenWidth - 15 - 75, screenHeight/2 - (75 / 2) - 20, turnCountImg, 0})
 
+	g.createDuelButtons()
+
+	return nil
+}
+
+func (g *Game) createDuelButtons() {
 	// Normal Summon Button
 	ButtonNormalSummon := newButton(g.duelRenderer.cardSizeW, g.duelRenderer.cardSizeH/10, -5000, -5000, "Normal Summon", func() error {
 		fmt.Println("Normal Summon button clicked")
 		return nil
 	})
-	g.duelButtons = []*Button{ButtonNormalSummon}
-
-	return nil
-}
-
-func (g *Game) createHPImage(text string, yPos float64) (*Label, error) {
-	img := ebiten.NewImage(playerHPWidth, playerHPHeight)
-	textImg := newTextImageMultiline(text, color.White, 20, playerHPWidth, playerHPHeight)
-	img.DrawImage(textImg, &ebiten.DrawImageOptions{})
-	return &Label{5, yPos, img, 0}, nil
-}
-
-func (g *Game) createTextImage(text string, xPos, yPos float64) (*Label, error) {
-	img := ebiten.NewImage(playerHPWidth, playerHPHeight)
-	textImg := newTextImageMultiline(text, color.White, 20, playerHPWidth, playerHPHeight)
-	img.DrawImage(textImg, &ebiten.DrawImageOptions{})
-	return &Label{xPos, yPos, img, 0}, nil
+	effectButton := newButton(g.duelRenderer.cardSizeW, g.duelRenderer.cardSizeH/10, -5000, -5000, "Activate", func() error {
+		fmt.Println("Ativate button clicked")
+		return nil
+	})
+	g.duelButtons = []*Button{ButtonNormalSummon, effectButton}
 }
