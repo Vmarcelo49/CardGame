@@ -88,7 +88,7 @@ func (g *Game) newCardClickedFunc(card *Card, gs *Gamestate) {
 		g.updateButton(card, g.duelButtons[0])
 	}
 	if card.CType == 2 && card.getLocation(gs) == "P1HAND" {
-		g.duelButtons[1].Effect = card.Effect // Reminder: Effect is a `func() error`
+		g.duelButtons[1].function = card.Effect // Reminder: Effect is a `func() error`
 		g.updateButton(card, g.duelButtons[1])
 	}
 }
