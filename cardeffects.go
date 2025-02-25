@@ -104,15 +104,6 @@ func drawCard(gamestate *Gamestate, target string, amount uint) {
 
 }
 
-func (c *Card) getItself(gamestate *Gamestate) bool {
-	for _, card := range gamestate.P1.Hand {
-		if card == c {
-			return true
-		}
-	}
-	return false
-}
-
 func removeCard(place []*Card, card *Card) []*Card {
 	for i, c := range place {
 		if c == card {
@@ -122,17 +113,27 @@ func removeCard(place []*Card, card *Card) []*Card {
 	return place
 }
 
-func (c *Card) normalSummon(gamestate *Gamestate) error {
+func (c *Card) getItself(gamestate *Gamestate) bool {
+	for _, card := range gamestate.P1.Hand {
+		if card == c {
+			return true
+		}
+	}
+	return false
+}
+
+
+func (c *Card)normalSummon(gs *Gamestate) error{
+	if c == nil{
+		return errors.New("couldnt get the selected card in hand to normal summon.")
+	}
 	if c.CType != Creature {
 		return fmt.Errorf("This card is not a creature")
 	}
 	if c.Flags&canBeNormalSummoned == 0 {
 		return fmt.Errorf("This card cannot be normal summoned")
 	}
-
-	gamestate.Field.P1 = append(gamestate.Field.P1, c)
-	gamestate.P1.Hand = removeCard(gamestate.P1.Hand, c)
-
-	fmt.Println("Card normal summoned:", c.Name)
+	gs.Field.P1 = append(gs.Field.P1, c)
+	gs.P1.Hand = removeCard(gs.P1.Hand, c)
 	return nil
 }

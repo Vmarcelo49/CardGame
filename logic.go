@@ -5,23 +5,6 @@ import (
 	"log"
 )
 
-// puts the specified button on top of the card
-func (g *Game) updateButton(card *Card, button *Button) {
-	button.x = card.X
-	button.y = card.Y - button.h
-
-	// Atualiza a função do botão para usar o efeito da carta selecionada
-	button.function = func() error {
-		button.alreadyClicked = true
-		button.x = -5000
-		err := card.normalSummon(g.gamestate)
-		if err != nil {
-			return err
-		}
-		return nil
-	}
-}
-
 func (g *Game) updateSelectCard() {
 	var selectedCard *Card
 
@@ -85,14 +68,25 @@ func (g *Game) updateGameLogic() {
 
 func (g *Game) newCardClickedFunc(card *Card, gs *Gamestate) {
 	if card.CType == 0 && card.getLocation(gs) == "P1HAND" {
-		g.updateButton(card, g.duelButtons[0])
-		fmt.Println("NormalSummon")
-		fmt.Println(len(g.duelButtons))
+		encapsulateButtonFunc(card,card) // MUDE ISSO TODO
 	}
 	if card.CType == 1 && card.getLocation(gs) == "P1HAND" {
-		g.duelButtons[1].function = card.Effect // Reminder: Effect is a `func() error`
-		g.duelButtons[1].x = card.X
-		g.duelButtons[1].y = card.Y - g.duelButtons[1].h
+		encapsulateButtonFunc(card,g.duelButtons[1])
 		fmt.Println("eff")
+	}
+}
+
+func encapsulateButtonFunc(card *Card, button *Button){
+	button.x = card.X
+	button.y = card.Y - button.h
+
+	button.function = func() error {
+		button.alreadyClicked = true
+		button.x = -5000
+		err := card.function
+		if err != nil {
+			return err
+		}
+		return nil
 	}
 }
