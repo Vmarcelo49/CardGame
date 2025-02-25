@@ -39,8 +39,7 @@ func (g *Game) updateSelectCard() {
 				// Se nenhuma carta estiver selecionada, selecione esta
 				fmt.Println("Card selected:", card.Name)
 				card.Selected = true
-				g.newCardClickedFunc(card,g.gamestate)
-				
+				g.newCardClickedFunc(card, g.gamestate)
 
 			} else if selectedCard != card {
 				// Se uma carta diferente estiver selecionada, deselecione a atual e selecione a nova
@@ -65,7 +64,7 @@ func (g *Game) updateSelectCard() {
 
 func (g *Game) updateGameLogic() {
 	// Verifica entradas de teclado e cliques em botões da Hud do duelo
-	if err := g.checkInput(); err != nil{
+	if err := g.checkInput(); err != nil {
 		log.Println(err)
 	}
 
@@ -84,11 +83,11 @@ func (g *Game) updateGameLogic() {
 	g.previousGamestate = copyGamestate(g.gamestate)
 }
 
-func newCardClickedFunc(card *Card, gs gamestate){
-	if card.CType == 1 && card.getLocation() == "P1HAND"{
+func (g *Game) newCardClickedFunc(card *Card, gs *Gamestate) {
+	if card.CType == 1 && card.getLocation(gs) == "P1HAND" {
 		g.updateButton(card, g.duelButtons[0])
 	}
-	if card.CType == 2 && card.getLocation() == "P1HAND"{
+	if card.CType == 2 && card.getLocation(gs) == "P1HAND" {
 		g.duelButtons[1].Effect = card.Effect // Reminder: Effect is a `func() error`
 		g.updateButton(card, g.duelButtons[1])
 	}

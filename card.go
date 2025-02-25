@@ -89,13 +89,13 @@ func createCardImage(cardFrameIm *ebiten.Image, card *Card) (*ebiten.Image, erro
 	return image, nil
 }
 
-func (c *Card)modifyHP(amount int){
+func (c *Card) modifyHP(amount int) {
 	originalValue := c.Stats.Life
 	c.Stats.Life += amount
-	fmt.Printf("Card HP value modified was %d, now is %d"originalValue,c.Stats.Life)
+	fmt.Printf("Card HP value modified was %d, now is %d", originalValue, c.Stats.Life)
 }
 
-func (c *Card) getLocation(gs Gamestate) string {
+func (c *Card) getLocation(gs *Gamestate) string {
 	// Check P1 locations
 	for _, card := range gs.P1.Hand {
 		if c == card {

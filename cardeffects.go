@@ -45,7 +45,7 @@ const (
 )
 
 type Damageable interface {
-    modifyHP(amount int)
+	modifyHP(amount int)
 }
 
 func inflictDamage(args ...interface{}) error {
@@ -75,20 +75,21 @@ func inflictDamage2(amount int, target Damageable) {
 	target.modifyHP(-amount)
 }
 
-func tapinhaEff() error{
-	amount := 5
-	target,err := getTarget("player,card")
-	if err != nil{
-		return errors.New("Unable to get a target for a card effect")
+/*
+	func tapinhaEff() error{
+		amount := 5
+		target,err := getTarget("player,card")
+		if err != nil{
+			return errors.New("Unable to get a target for a card effect")
+		}
+		return inflictDamage(amount,target)
 	}
-	return inflictDamage(amount,target)
-}
 
-func getTarget(strValues string) interface{}{
-	//split the str with ,
-	// check for each valid target and return a pointer to it
-}
-
+	func getTarget(strValues string) interface{}{
+		//split the str with ,
+		// check for each valid target and return a pointer to it
+	}
+*/
 func drawCard(gamestate *Gamestate, target string, amount uint) {
 	if target == "player" {
 		for i := 0; i < int(amount); i++ {

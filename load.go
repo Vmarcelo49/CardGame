@@ -130,7 +130,7 @@ func (g *Game) setupDuelUI() error {
 	g.otherImgs = append(g.otherImgs, &Label{screenWidth - 15 - turnButtonSize, screenHeight/2 - (turnButtonSize / 2), turnButtonImg, 0})
 
 	turnCountImg := ebiten.NewImage(100, 50)
-	turnCountImg.DrawImage(newTextImageMultiline("Turn: 1", color.White, 20, 100), &ebiten.DrawImageOptions{})
+	turnCountImg.DrawImage(newTextImageMultiline("Turn: 1", color.White, 20, 100, 50), &ebiten.DrawImageOptions{})
 	g.otherImgs = append(g.otherImgs, &Label{screenWidth - 15 - 75, screenHeight/2 - (75 / 2) - 20, turnCountImg, 0})
 
 	// Normal Summon Button
@@ -143,16 +143,16 @@ func (g *Game) setupDuelUI() error {
 	return nil
 }
 
-func (g *Game) createHPImage(text string, yPos int) (*Label, error) {
+func (g *Game) createHPImage(text string, yPos float64) (*Label, error) {
 	img := ebiten.NewImage(playerHPWidth, playerHPHeight)
-	textImg := newTextImageMultiline(text, color.White, 20, playerHPWidth)
+	textImg := newTextImageMultiline(text, color.White, 20, playerHPWidth, playerHPHeight)
 	img.DrawImage(textImg, &ebiten.DrawImageOptions{})
 	return &Label{5, yPos, img, 0}, nil
 }
 
-func (g *Game) createTextImage(text string, xPos, yPos int) (*Label, error) {
+func (g *Game) createTextImage(text string, xPos, yPos float64) (*Label, error) {
 	img := ebiten.NewImage(playerHPWidth, playerHPHeight)
-	textImg := newTextImageMultiline(text, color.White, 20, playerHPWidth)
+	textImg := newTextImageMultiline(text, color.White, 20, playerHPWidth, playerHPHeight)
 	img.DrawImage(textImg, &ebiten.DrawImageOptions{})
 	return &Label{xPos, yPos, img, 0}, nil
 }

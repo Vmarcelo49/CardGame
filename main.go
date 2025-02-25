@@ -60,7 +60,6 @@ func (g *Game) Update() error {
 			g.mainMenuButtons = g.newMainMenuButtons()
 		}
 		for _, b := range g.mainMenuButtons {
-			if !b.alreadyClicked { // Avoid calling the function to create the duel more than once.
 			if !b.alreadyClicked { // making sure that its not called twice
 				exitFlag = b.checkClicked(g.mouse)
 			}
@@ -101,8 +100,7 @@ func newGame() *Game {
 }
 
 func init() {
-	err := loadFont()
-	if err != nil {
+	if err := loadFont(); err != nil {
 		log.Fatal(err)
 	}
 }
