@@ -164,6 +164,16 @@ func (g *Game) drawHand(screen *ebiten.Image, hand []*Card, deckLocationY float6
 	}
 }
 
+// Draws only the facedown img
+func (g *Game) drawHandP2(screen *ebiten.Image, hand []*Card, deckLocationY float64) {
+	for _, card := range hand {
+		op := &ebiten.DrawImageOptions{}
+		op.GeoM.Scale(g.duelRenderer.scaling, g.duelRenderer.scaling)
+		op.GeoM.Translate(float64(card.X), deckLocationY)
+		screen.DrawImage(g.duelRenderer.cardImgMap[0], op)
+	}
+}
+
 // DrawDuel draws the duel screen, including decks, fields, and hands.
 func (g *Game) DrawDuel(screen *ebiten.Image) {
 	screen.Fill(backgroundColor)
@@ -178,7 +188,7 @@ func (g *Game) DrawDuel(screen *ebiten.Image) {
 	vector.DrawFilledRect(screen, 0, screenHeight/2, screenWidth, 2, color.RGBA{R: 255, G: 255, B: 255, A: 255}, false)
 
 	g.drawHand(screen, g.gamestate.P1.Hand, g.duelRenderer.P1DeckLocationY)
-	g.drawHand(screen, g.gamestate.P2.Hand, g.duelRenderer.P2DeckLocationY)
+	g.drawHandP2(screen, g.gamestate.P2.Hand, g.duelRenderer.P2DeckLocationY)
 
 	for _, im := range g.otherImgs {
 		if im.x > 0 && im.y > 0 {

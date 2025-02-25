@@ -86,9 +86,11 @@ func (g *Game) updateGameLogic() {
 func (g *Game) newCardClickedFunc(card *Card, gs *Gamestate) {
 	if card.CType == 1 && card.getLocation(gs) == "P1HAND" {
 		g.updateButton(card, g.duelButtons[0])
+		fmt.Println("NormalSummon")
 	}
 	if card.CType == 2 && card.getLocation(gs) == "P1HAND" {
 		g.duelButtons[1].function = card.Effect // Reminder: Effect is a `func() error`
 		g.updateButton(card, g.duelButtons[1])
+		fmt.Println("eff")
 	}
 }

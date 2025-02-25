@@ -109,6 +109,11 @@ func (g *Game) loadDuelMode() error {
 	if err := g.setupDuelUI(); err != nil {
 		return fmt.Errorf("failed to setup duel UI: %w", err)
 	}
+	effectButton := newButton(g.duelRenderer.cardSizeW, g.duelRenderer.cardSizeH/10, -5000, -5000, "Activate", func() error {
+		fmt.Println("Ativate button clicked")
+		return nil
+	})
+	g.duelButtons = append(g.duelButtons, effectButton)
 
 	return nil
 }
@@ -134,7 +139,7 @@ func (g *Game) setupDuelUI() error {
 	g.otherImgs = append(g.otherImgs, &Label{screenWidth - 15 - 75, screenHeight/2 - (75 / 2) - 20, turnCountImg, 0})
 
 	// Normal Summon Button
-	ButtonNormalSummon := newButton(g.duelRenderer.cardSizeW, g.duelRenderer.cardSizeH/10, 5000, 5000, "Normal Summon", func() error {
+	ButtonNormalSummon := newButton(g.duelRenderer.cardSizeW, g.duelRenderer.cardSizeH/10, -5000, -5000, "Normal Summon", func() error {
 		fmt.Println("Normal Summon button clicked")
 		return nil
 	})
