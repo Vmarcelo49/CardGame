@@ -1,4 +1,4 @@
-module EbiGame
+module github.com/Vmarcelo49/CardGame
 
 go 1.22.2
 

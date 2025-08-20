@@ -5,3 +5,4 @@ Examples/example.go
 EbiGame.exe
 *.zip
 EbiGame.exe
+vendor/

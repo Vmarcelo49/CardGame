@@ -1,14 +1,12 @@
-package main
+package card
 
-// Cria uma carta apartir de um ID, se o ID não existir, retorna uma carta padrão indicando erro, não dá os valores de X,Y,W,H e Selected
-func newCardFromID(cardID int) *Card {
+// NewCardFromID creates a card from an ID, returns default error card if ID not found
+func NewCardFromID(cardID int) *Card {
 	if card, found := cardCatalog[cardID]; found {
-		// Retorna uma cópia da carta para evitar alterações no catálogo original
 		newCard := *card
 		return &newCard
 	}
 
-	// Se o ID da carta não for encontrado, retorna uma carta padrão indicando erro
 	return &Card{
 		Name:  "Carta Fora do Range de IDs",
 		ID:    0,
@@ -35,7 +33,7 @@ var cardCatalog = map[int]*Card{
 			Attack: 15,
 			Life:   5,
 		},
-		Flags:    canBeNormalSummoned,
+		Flags:    CanBeNormalSummoned,
 		Keywords: Attacker,
 	},
 	2: {
@@ -44,7 +42,7 @@ var cardCatalog = map[int]*Card{
 		CType:   Spell,
 		SubType: "fast?",
 		Text:    "Cause 5 de dano a qualquer coisa. - Um tapinha não dói",
-		Flags:   canBeUsedSpeed2,
+		Flags:   CanBeUsedSpeed2,
 	},
 	3: {
 		Name:    "Totem da drenagem vital",
@@ -52,6 +50,6 @@ var cardCatalog = map[int]*Card{
 		CType:   Permanent,
 		SubType: "Permanent Token",
 		Text:    "Para ativar é necessário ter mais de 10 de vida. Receba 15 de dano cada começo de turno. Criaturas que você controla ganham ataque igual a vida. ",
-		Flags:   cannotBeUsed,
+		Flags:   CannotBeUsed,
 	},
 }
